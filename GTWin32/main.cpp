@@ -1,6 +1,8 @@
 #include<windows.h>
 
 void AddMenus(HWND);
+void AddControls(HWND);
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
@@ -27,6 +29,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	AddMenus(hwnd);
+	AddControls(hwnd);
 	ShowWindow(hwnd, nCmdShow);
 
 	MSG msg = { 0 };
@@ -49,11 +52,18 @@ void AddMenus(HWND hwnd) {
 	SetMenu(hwnd, hMenu);
 }
 
+void AddControls(HWND hwnd) {
+	CreateWindowW(L"button", L"Click Me", WS_VISIBLE | WS_CHILD, 10, 10, 100, 30, hwnd, (HMENU)2, NULL, NULL);
+}
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 		case WM_COMMAND:
 			if (LOWORD(wParam) == 1) {
 				PostQuitMessage(0);
+			}
+			else if (LOWORD(wParam) == 2) {
+				MessageBox(hwnd, L"Button Clicked!", L"Message", MB_OK);
 			}
 			break;
 		case WM_DESTROY:
