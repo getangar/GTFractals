@@ -47,6 +47,7 @@ void AddMenus(HWND hwnd) {
 	HMENU hFileMenu = CreateMenu();
 	HMENU hHelpMenu = CreateMenu();
 
+	AppendMenu(hFileMenu, MF_STRING, 4, L"Open");
 	AppendMenu(hFileMenu, MF_STRING, 1, L"Exit");
 	AppendMenu(hHelpMenu, MF_STRING, 3, L"About");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
@@ -59,6 +60,26 @@ void AddControls(HWND hwnd) {
 	CreateWindowW(L"button", L"Click Me", WS_VISIBLE | WS_CHILD, 10, 10, 100, 30, hwnd, (HMENU)2, NULL, NULL);
 }
 
+void OpenFile(HWND hwnd) {
+	OPENFILENAME ofn;
+	WCHAR szFile[260] = { 0 };
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = L"Text Files\0*.TXT\0All Files\0*.*\0";
+	ofn.nFilterIndex = 1;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	if (GetOpenFileName(&ofn)) {
+		MessageBox(hwnd, szFile, L"Selected File", MB_OK);
+	}
+}
+
+
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 		case WM_COMMAND:
@@ -68,8 +89,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			else if (LOWORD(wParam) == 2) {
 				MessageBox(hwnd, L"Button Clicked!", L"Message", MB_OK);
 			}
-			else {
+			else if (LOWORD(wParam) == 3) {
 				MessageBox(hwnd, L"(c)Copyright 2025 by Gennaro Eduardo Tangari.", L"About", MB_OK);
+				
+			}
+			else {
+				OpenFile(hwnd);
 			}
 			break;
 		case WM_DESTROY:
