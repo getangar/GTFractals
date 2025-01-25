@@ -63,7 +63,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		{
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-		
+
 			const char* text = "Hello, World!";
 			TextOutA(hdc, 10, 10, text, strlen(text));
 
