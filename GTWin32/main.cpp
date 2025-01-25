@@ -45,9 +45,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void AddMenus(HWND hwnd) {
 	HMENU hMenu = CreateMenu();
 	HMENU hFileMenu = CreateMenu();
+	HMENU hHelpMenu = CreateMenu();
 
 	AppendMenu(hFileMenu, MF_STRING, 1, L"Exit");
+	AppendMenu(hHelpMenu, MF_STRING, 3, L"About");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
+	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hHelpMenu, L"?");
 
 	SetMenu(hwnd, hMenu);
 }
@@ -64,6 +67,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 			else if (LOWORD(wParam) == 2) {
 				MessageBox(hwnd, L"Button Clicked!", L"Message", MB_OK);
+			}
+			else {
+				MessageBox(hwnd, L"(c)Copyright 2025 by Gennaro Eduardo Tangari.", L"About", MB_OK);
 			}
 			break;
 		case WM_DESTROY:
