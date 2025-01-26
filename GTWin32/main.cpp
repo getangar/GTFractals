@@ -81,15 +81,14 @@ void OpenFile(HWND hwnd) {
 		_wfopen_s(&file, szFile, L"r");
 
 		if (file) {
-			char buffer[2048] = { 0 }; // Buffer per i dati letti
-			fread(buffer, sizeof(char), sizeof(buffer) - 1, file); // Leggi il file
+			char buffer[2048] = { 0 };
+			fread(buffer, sizeof(char), sizeof(buffer) - 1, file);
 			fclose(file);
-
-			// Converte da UTF-8 a Unicode
+			
 			WCHAR wbuffer[2048] = { 0 };
 			MultiByteToWideChar(CP_UTF8, 0, buffer, -1, wbuffer, 2048);
 
-			// Mostra il contenuto del file
+
 			MessageBox(hwnd, wbuffer, L"File Content", MB_OK);
 		}
 		else {
