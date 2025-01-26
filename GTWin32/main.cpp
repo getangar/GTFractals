@@ -3,6 +3,8 @@
 
 void AddMenus(HWND);
 void AddControls(HWND);
+void DrawText(HWND);
+void DrawMandelbrot(HWND);
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -97,7 +99,51 @@ void OpenFile(HWND hwnd) {
 	}
 }
 
+void DrawMandelbrot(HWND hwnd) {
+	const double xmin = -2.25, xmax = 0.75, ymin = -1.5, ymax = 1.5;
+	const int max_iter = 250;
 
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hwnd, &ps);
+
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	int width = rect.right;
+	int height = rect.bottom;
+
+	for (int py = 0; py < height; ++py) {
+		double y0 = ymin + (ymax - ymin) * py / height;
+		for (int px = 0; px < width; ++px) {
+			double x0 = xmin + (xmax - xmin) * px / width;
+
+			double x = 0.0;
+			double y = 0.0;
+			int iteration = 0;
+
+			while (x * x + y * y <= 4.0 && iteration < max_iter) {
+				double xtemp = x * x - y * y + x0;
+				y = 2 * x * y + y0;
+				x = xtemp;
+				++iteration;
+			}
+
+			COLORREF color = (iteration == max_iter) ? RGB(0, 0, 0) : RGB(255, 255, 255);
+			SetPixel(hdc, px, py, color);
+		}
+	}
+
+	EndPaint(hwnd, &ps);
+}
+
+void DrawText(HWND hwnd) {
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hwnd, &ps);
+
+	const char* text = "Mandelbrot Set";
+	TextOutA(hdc, 10, 10, text, strlen(text));
+
+	EndPaint(hwnd, &ps);
+}
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
@@ -120,14 +166,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			PostQuitMessage(0);
 			break;
 		case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-
-			const char* text = "Hello, World!";
-			TextOutA(hdc, 10, 10, text, strlen(text));
-
-			EndPaint(hwnd, &ps);
+		{			
+			DrawMandelbrot(hwnd);
 		}
 
 		default:
