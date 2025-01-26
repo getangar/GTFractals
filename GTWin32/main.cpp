@@ -111,7 +111,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 			else if (LOWORD(wParam) == 3) {
 				MessageBox(hwnd, L"(c)Copyright 2025 by Gennaro Eduardo Tangari.", L"About", MB_OK);
-				
+
 			}
 			else {
 				OpenFile(hwnd);
