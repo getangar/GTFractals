@@ -1,13 +1,20 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "dialog.h"
+#include "resource.h"
+#include "global.h"
+#include <string>
+
+
 // Global variables
+double xmin = -2.25, ymin = -1.5, xmax = 0.75, ymax = 1.5;
+int max_iter = 250;
 bool isSelecting = false;  // Indicates if a selection is in progress
 bool isResizing = false;   // Indicates if the window is being resized
 int prevWidth = 0, prevHeight = 0; // Previous window dimensions
 POINT startPoint, endPoint; // Start and end coordinates of the selection
 RECT selectionRect = { 0, 0, 0, 0 }; // Selection rectangle
-double xmin = -2.25, xmax = 0.75, ymin = -1.5, ymax = 1.5; // Original Mandelbrot coordinates
 
 void AddMenus(HWND);
 void DrawMandelbrot(HWND);
@@ -58,22 +65,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void AddMenus(HWND hwnd) {
 	HMENU hMenu = CreateMenu();
 	HMENU hFileMenu = CreateMenu();
+	HMENU hEditMenu = CreateMenu();
 	HMENU hDrawMenu = CreateMenu();
 	HMENU hHelpMenu = CreateMenu();
 
+	// File Menu
+	AppendMenu(hFileMenu, MF_STRING, 101, L"Open");
+	AppendMenu(hFileMenu, MF_STRING, 102, L"Save");
+	AppendMenu(hFileMenu, MF_STRING, 103, L"Save as...");
+	AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hFileMenu, MF_STRING, 104, L"Export image");
+	AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
+	AppendMenu(hFileMenu, MF_STRING, 105, L"Print");
+	AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
 	AppendMenu(hFileMenu, MF_STRING, 1, L"Exit");
+
+	// Edit Menu
+	AppendMenu(hEditMenu, MF_STRING, 106, L"Settings");
+
+	// Draw Menu
 	AppendMenu(hDrawMenu, MF_STRING, 2, L"Reset Image");
+
+	// Help Menu
+	AppendMenu(hHelpMenu, MF_STRING, 107, L"Help");
+	AppendMenu(hHelpMenu, MF_SEPARATOR, 0, NULL);
 	AppendMenu(hHelpMenu, MF_STRING, 3, L"About");
+
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
+	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"Edit");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hDrawMenu, L"Draw");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hHelpMenu, L"?");
 
 	SetMenu(hwnd, hMenu);
 }
 
-void DrawMandelbrot(HWND hwnd) {
-	const int max_iter = 2000;
-
+void DrawMandelbrot(HWND hwnd) {	
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
 
@@ -155,6 +181,23 @@ void ResetMandelbrot(HWND hwnd) {
 	InvalidateRect(hwnd, NULL, TRUE);
 }
 
+
+bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
+	OPENFILENAME ofn = { 0 };
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFilter = L"JPEG Files\0*.jpg\0All Files\0*.*\0";
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = filePathSize;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+	ofn.lpstrDefExt = L"jpg";
+
+	return GetSaveFileName(&ofn);
+}
+
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_COMMAND:
@@ -163,6 +206,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}        
 		else if (LOWORD(wParam) == 2) { // Reset
 			ResetMandelbrot(hwnd);
+		}
+		else if (LOWORD(wParam) == 101) {			
+		}
+		else if (LOWORD(wParam) == 102) {
+		}
+		else if (LOWORD(wParam) == 103) {
+			WCHAR filePath[MAX_PATH] = { 0 };
+
+			if (ShowSaveFileDialog(hwnd, filePath, MAX_PATH)) {
+				HDC hdc = GetDC(hwnd);
+				
+				ReleaseDC(hwnd, hdc);
+			}
+		}
+		else if (LOWORD(wParam) == 106) {
+			if (DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), hwnd, DialogProc, 0) == IDOK) {
+				InvalidateRect(hwnd, NULL, TRUE); // Ridisegna con i nuovi parametri
+			}
 		}
 		else {
 			MessageBox(hwnd, L"GTWin32\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
