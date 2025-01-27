@@ -1,5 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
+#include <thread>
+
 
 #include "dialog.h"
 #include "resource.h"
@@ -20,6 +22,7 @@ void AddMenus(HWND);
 void DrawMandelbrot(HWND);
 void UpdateMandelbrot(HWND);
 void DrawSelectionRect(HWND);
+void MandelbrotThread(HWND);
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -46,7 +49,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	AddMenus(hwnd);
 	ShowWindow(hwnd, nCmdShow);
-
+		
 	// Set initial dimensions
 	RECT rect;
 	GetClientRect(hwnd, &rect);
@@ -134,6 +137,11 @@ void DrawMandelbrot(HWND hwnd) {
 	// Generate a beep to indicate the calculation is complete
 	Beep(750, 300); // Frequency 750 Hz, duration 300 ms
 }
+
+void MandelbrotThread(HWND hwnd) {
+	DrawMandelbrot(hwnd);
+}
+
 
 void DrawSelectionRect(HWND hwnd) {
 	HDC hdc = GetDC(hwnd); // Get the graphics context
@@ -272,7 +280,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_PAINT:
 		if (!isResizing) { // Avoid drawing during resizing or moving
-			DrawMandelbrot(hwnd);
+			//DrawMandelbrot(hwnd);
+			std::thread mandelbrotThread(MandelbrotThread, hwnd);
+			mandelbrotThread.detach();
 		}
 		break;
 	case WM_DESTROY:
