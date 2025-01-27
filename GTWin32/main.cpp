@@ -1,6 +1,9 @@
 #include<windows.h>
 #include<stdio.h>
 
+bool isResizing = false;
+int prevWidth = 0, prevHeight = 0;
+
 void AddMenus(HWND);
 void AddControls(HWND);
 void DrawText(HWND);
@@ -34,6 +37,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	AddMenus(hwnd);
 	AddControls(hwnd);
 	ShowWindow(hwnd, nCmdShow);
+
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	prevWidth = rect.right;
+	prevHeight = rect.bottom;
 
 	MSG msg = { 0 };
 
@@ -166,8 +174,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			break;
 		case WM_PAINT:
 		{			
-			DrawMandelbrot(hwnd);
+			if (!isResizing) {
+				DrawMandelbrot(hwnd);
+			}
 		}
+		case WM_ENTERSIZEMOVE: 
+		{
+			isResizing = true;
+			break;
+		}
+			
+		case WM_EXITSIZEMOVE:
+		{
+			isResizing = false;
+
+			// Controlla se le dimensioni sono cambiate
+			RECT rect;
+			GetClientRect(hwnd, &rect);
+			if (rect.right != prevWidth || rect.bottom != prevHeight) {
+				prevWidth = rect.right;
+				prevHeight = rect.bottom;
+				InvalidateRect(hwnd, NULL, TRUE); // Forza il ridisegno
+			}
+
+		}
+
 
 		default:
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
