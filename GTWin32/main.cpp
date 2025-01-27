@@ -187,18 +187,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case WM_EXITSIZEMOVE:
 		{
 			isResizing = false;
-
-			// Controlla se le dimensioni sono cambiate
+			
 			RECT rect;
 			GetClientRect(hwnd, &rect);
 			if (rect.right != prevWidth || rect.bottom != prevHeight) {
 				prevWidth = rect.right;
 				prevHeight = rect.bottom;
-				InvalidateRect(hwnd, NULL, TRUE); // Forza il ridisegno
+				InvalidateRect(hwnd, NULL, TRUE);
 			}
-
 		}
-
 
 		default:
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
