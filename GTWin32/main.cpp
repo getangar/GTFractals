@@ -1,8 +1,10 @@
-#include<windows.h>
-#include<stdio.h>
+#include <windows.h>
+#include <stdio.h>
 
 // Variabili globali
-bool isSelecting = false; // Indica se è in corso la selezione
+bool isSelecting = false;  // Indica se è in corso la selezione
+bool isResizing = false;   // Indica se la finestra è in stato di ridimensionamento
+int prevWidth = 0, prevHeight = 0; // Dimensioni precedenti della finestra
 POINT startPoint, endPoint; // Coordinate di inizio e fine selezione
 RECT selectionRect = { 0, 0, 0, 0 }; // Rettangolo di selezione
 double xmin = -2.25, xmax = 0.75, ymin = -1.5, ymax = 1.5; // Coordinate Mandelbrot originali
@@ -18,7 +20,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     const LPCWSTR CLASS_NAME = L"GTWin32";
 
     WNDCLASS wc = { 0 };
-
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = CLASS_NAME;
@@ -39,8 +40,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     AddMenus(hwnd);
     ShowWindow(hwnd, nCmdShow);
 
-    MSG msg = { 0 };
+    // Imposta le dimensioni iniziali
+    RECT rect;
+    GetClientRect(hwnd, &rect);
+    prevWidth = rect.right;
+    prevHeight = rect.bottom;
 
+    MSG msg = { 0 };
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -52,10 +58,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 void AddMenus(HWND hwnd) {
     HMENU hMenu = CreateMenu();
     HMENU hFileMenu = CreateMenu();
-
     AppendMenu(hFileMenu, MF_STRING, 1, L"Exit");
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
-
     SetMenu(hwnd, hMenu);
 }
 
@@ -100,29 +104,21 @@ void DrawMandelbrot(HWND hwnd) {
 void DrawSelectionRect(HWND hwnd) {
     HDC hdc = GetDC(hwnd); // Ottieni il contesto grafico
 
-    // Usa la modalità XOR per creare un effetto trasparente
-    int oldMode = SetROP2(hdc, R2_XORPEN);
-
-    // Penna con bordo rosso
-    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+    int oldMode = SetROP2(hdc, R2_NOTXORPEN); // Modalità XOR
+    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0)); // Penna con bordo rosso
     HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
 
-    // Disegna il rettangolo
     Rectangle(hdc, selectionRect.left, selectionRect.top, selectionRect.right, selectionRect.bottom);
 
-    // Ripristina lo stato precedente
     SelectObject(hdc, hOldPen);
     SetROP2(hdc, oldMode);
-
     DeleteObject(hPen);
-    ReleaseDC(hwnd, hdc); // Rilascia il contesto grafico
+    ReleaseDC(hwnd, hdc);
 }
-
 
 void UpdateMandelbrot(HWND hwnd) {
     RECT rect;
     GetClientRect(hwnd, &rect);
-
     int width = rect.right;
     int height = rect.bottom;
 
@@ -137,8 +133,7 @@ void UpdateMandelbrot(HWND hwnd) {
     ymin = newYmin;
     ymax = newYmax;
 
-    // Forza il ridisegno
-    InvalidateRect(hwnd, NULL, TRUE);
+    InvalidateRect(hwnd, NULL, TRUE); // Forza il ridisegno
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -146,6 +141,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_COMMAND:
         if (LOWORD(wParam) == 1) {
             PostQuitMessage(0);
+        }
+        break;
+    case WM_ENTERSIZEMOVE:
+        isResizing = true;
+        break;
+    case WM_EXITSIZEMOVE:
+        isResizing = false;
+
+        // Controlla se le dimensioni sono cambiate
+        RECT rect;
+        GetClientRect(hwnd, &rect);
+        if (rect.right != prevWidth || rect.bottom != prevHeight) {
+            prevWidth = rect.right;
+            prevHeight = rect.bottom;
+            InvalidateRect(hwnd, NULL, TRUE); // Ridisegna solo se le dimensioni cambiano
         }
         break;
     case WM_LBUTTONDOWN:
@@ -159,31 +169,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         break;
     case WM_MOUSEMOVE:
         if (isSelecting) {
-            // Cancella il rettangolo precedente
-            DrawSelectionRect(hwnd);
-
-            // Aggiorna le coordinate
+            DrawSelectionRect(hwnd); // Cancella il rettangolo precedente
             endPoint.x = LOWORD(lParam);
             endPoint.y = HIWORD(lParam);
             selectionRect.right = endPoint.x;
             selectionRect.bottom = endPoint.y;
-
-            // Disegna il nuovo rettangolo
-            DrawSelectionRect(hwnd);
+            DrawSelectionRect(hwnd); // Disegna il nuovo rettangolo
         }
         break;
     case WM_LBUTTONUP:
         if (isSelecting) {
             isSelecting = false;
-            endPoint.x = LOWORD(lParam);
-            endPoint.y = HIWORD(lParam);
-            selectionRect.right = endPoint.x;
-            selectionRect.bottom = endPoint.y;
+            DrawSelectionRect(hwnd); // Cancella il rettangolo
             UpdateMandelbrot(hwnd);
         }
         break;
     case WM_PAINT:
-        DrawMandelbrot(hwnd);
+        if (!isResizing) { // Evita il disegno durante il ridimensionamento o lo spostamento
+            DrawMandelbrot(hwnd);
+        }
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
