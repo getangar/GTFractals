@@ -4,7 +4,6 @@
 #include "dialog.h"
 #include "resource.h"
 #include "global.h"
-#include <string>
 
 
 // Global variables
@@ -20,6 +19,13 @@ void AddMenus(HWND);
 void DrawMandelbrot(HWND);
 void UpdateMandelbrot(HWND);
 void DrawSelectionRect(HWND);
+void MandelbrotThread(HWND);
+DWORD WINAPI MandelbrotThread(LPVOID lpParam);
+
+typedef struct {
+	HWND hwnd;
+} MandelbrotParams;
+
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -46,7 +52,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	AddMenus(hwnd);
 	ShowWindow(hwnd, nCmdShow);
-
+		
 	// Set initial dimensions
 	RECT rect;
 	GetClientRect(hwnd, &rect);
@@ -129,11 +135,44 @@ void DrawMandelbrot(HWND hwnd) {
 		}
 	}
 
-	EndPaint(hwnd, &ps);
-
-	// Generate a beep to indicate the calculation is complete
-	Beep(750, 300); // Frequency 750 Hz, duration 300 ms
+	EndPaint(hwnd, &ps);	
 }
+
+DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
+	MandelbrotParams* params = (MandelbrotParams*)lpParam;
+	HWND hwnd = params->hwnd;
+
+	// Calculate Mandelbrot set
+	DrawMandelbrot(hwnd);
+
+	// Beep whe the thread has been completed
+	Beep(750, 300);
+	free(params);
+	return 0;
+}
+
+void StartMandelbrotThread(HWND hwnd) {
+	MandelbrotParams* params = (MandelbrotParams*)malloc(sizeof(MandelbrotParams));
+	params->hwnd = hwnd;
+
+	HANDLE threadHandle = CreateThread(
+		NULL,                 // Security attributes
+		0,                    // Stack size (0 uses the default value)
+		MandelbrotThread,     // Thread function
+		params,               // Parameter passed to the thread function
+		0,                    // Creation options (0 to start the thread immediately)
+		NULL                  // Thread ID (not needed here)
+	);
+
+	if (threadHandle == NULL) {
+		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+	}
+	else {
+		// Release the thead handle
+		CloseHandle(threadHandle);
+	}
+}
+
 
 void DrawSelectionRect(HWND hwnd) {
 	HDC hdc = GetDC(hwnd); // Get the graphics context
@@ -272,7 +311,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_PAINT:
 		if (!isResizing) { // Avoid drawing during resizing or moving
-			DrawMandelbrot(hwnd);
+			//DrawMandelbrot(hwnd);
+			StartMandelbrotThread(hwnd);			
 		}
 		break;
 	case WM_DESTROY:
