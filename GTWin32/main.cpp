@@ -72,7 +72,7 @@ void AddMenus(HWND hwnd) {
 }
 
 void DrawMandelbrot(HWND hwnd) {
-	const int max_iter = 250;
+	const int max_iter = 2000;
 
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
@@ -165,7 +165,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			ResetMandelbrot(hwnd);
 		}
 		else {
-			MessageBox(hwnd, L"GTWin32\n\nA simple Mandelbrot set viewer\n(c)Copyright 2015 by Gennaro E. Tangari", L"About", MB_OK);
+			MessageBox(hwnd, L"GTWin32\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
 		}
 		break;
 	case WM_ENTERSIZEMOVE:
