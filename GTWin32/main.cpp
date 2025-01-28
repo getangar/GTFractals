@@ -40,7 +40,12 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 
 // Entry point
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+int WINAPI WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nCmdShow
+) {
 	const LPCWSTR CLASS_NAME = L"GTFractals";
 
 	WNDCLASS wc = { 0 };
@@ -182,55 +187,55 @@ DWORD WINAPI JuliaThread(LPVOID lpParam) {
 }
 
 void StartMandelbrotThread(HWND hwnd) {
-    FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
-    if (params == NULL) {
-        MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
-        return;
-    }
-    params->hwnd = hwnd;
+	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
+	if (params == NULL) {
+		MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
+		return;
+	}
+	params->hwnd = hwnd;
 
-    HANDLE threadHandle = CreateThread(
-        NULL,                 // Security attributes
-        0,                    // Stack size (0 uses the default value)
-        MandelbrotThread,     // Thread function
-        params,               // Parameter passed to the thread function
-        0,                    // Creation options (0 to start the thread immediately)
-        NULL                  // Thread ID (not needed here)
-    );
+	HANDLE threadHandle = CreateThread(
+		NULL,                 // Security attributes
+		0,                    // Stack size (0 uses the default value)
+		MandelbrotThread,     // Thread function
+		params,               // Parameter passed to the thread function
+		0,                    // Creation options (0 to start the thread immediately)
+		NULL                  // Thread ID (not needed here)
+	);
 
-    if (threadHandle == NULL) {
-        MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
-        free(params);
-    } else {
-        // Release the thread handle
-        CloseHandle(threadHandle);
-    }
+	if (threadHandle == NULL) {
+		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+		free(params);
+	} else {
+		// Release the thread handle
+		CloseHandle(threadHandle);
+	}
 }
 
 void StartJuliaThread(HWND hwnd) {
-    FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
-    if (params == NULL) {
-        MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
-        return;
-    }
-    params->hwnd = hwnd;
+	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
+	if (params == NULL) {
+		MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
+		return;
+	}
+	params->hwnd = hwnd;
 
-    HANDLE threadHandle = CreateThread(
-        NULL,                 // Security attributes
-        0,                    // Stack size (0 uses the default value)
-        JuliaThread,          // Thread function
-        params,               // Parameter passed to the thread function
-        0,                    // Creation options (0 to start the thread immediately)
-        NULL                  // Thread ID (not needed here)
-    );
+	HANDLE threadHandle = CreateThread(
+		NULL,                 // Security attributes
+		0,                    // Stack size (0 uses the default value)
+		JuliaThread,          // Thread function
+		params,               // Parameter passed to the thread function
+		0,                    // Creation options (0 to start the thread immediately)
+		NULL                  // Thread ID (not needed here)
+	);
 
-    if (threadHandle == NULL) {
-        MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
-        free(params);
-    } else {
-        // Release the thread handle
-        CloseHandle(threadHandle);
-    }
+	if (threadHandle == NULL) {
+		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+		free(params);
+	} else {
+		// Release the thread handle
+		CloseHandle(threadHandle);
+	}
 }
 
 void DrawSelectionRect(HWND hwnd) {
