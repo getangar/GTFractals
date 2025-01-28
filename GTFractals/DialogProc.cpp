@@ -29,6 +29,17 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
         swprintf(buffer, 100, L"%d", max_iter);
         SetDlgItemText(hDlg, IDC_ITER, buffer);
 
+        // Set px
+		swprintf(buffer, 100, L"%lf", px);
+		SetDlgItemText(hDlg, IDC_PX, buffer);
+
+		// Set py
+		swprintf(buffer, 100, L"%lf", py);
+		SetDlgItemText(hDlg, IDC_PY, buffer);
+
+		// Set Julia checkbox
+		CheckDlgButton(hDlg, IDC_JULIA, isJulia ? BST_CHECKED : BST_UNCHECKED);
+
         return TRUE;
     }
 
