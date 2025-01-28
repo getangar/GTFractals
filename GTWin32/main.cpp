@@ -19,12 +19,15 @@ void AddMenus(HWND);
 void DrawMandelbrot(HWND);
 void UpdateMandelbrot(HWND);
 void DrawSelectionRect(HWND);
+
+DWORD WINAPI MandelbrotThread(LPVOID);
+DWORD WINAPI JuliaThread(LPVOID);
 void MandelbrotThread(HWND);
-DWORD WINAPI MandelbrotThread(LPVOID lpParam);
+void DrawJulia(HWND);
 
 typedef struct {
 	HWND hwnd;
-} MandelbrotParams;
+} FractalParams;
 
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -138,8 +141,12 @@ void DrawMandelbrot(HWND hwnd) {
 	EndPaint(hwnd, &ps);	
 }
 
+void DrawJulia(HWND hwnd) {
+
+}
+
 DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
-	MandelbrotParams* params = (MandelbrotParams*)lpParam;
+	FractalParams* params = (FractalParams*)lpParam;
 	HWND hwnd = params->hwnd;
 
 	// Calculate Mandelbrot set
@@ -151,28 +158,70 @@ DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
 	return 0;
 }
 
-void StartMandelbrotThread(HWND hwnd) {
-	MandelbrotParams* params = (MandelbrotParams*)malloc(sizeof(MandelbrotParams));
-	params->hwnd = hwnd;
+DWORD WINAPI JuliaThread(LPVOID lpParam) {
+	FractalParams* params = (FractalParams*)lpParam;
+	HWND hwnd = params->hwnd;
 
-	HANDLE threadHandle = CreateThread(
-		NULL,                 // Security attributes
-		0,                    // Stack size (0 uses the default value)
-		MandelbrotThread,     // Thread function
-		params,               // Parameter passed to the thread function
-		0,                    // Creation options (0 to start the thread immediately)
-		NULL                  // Thread ID (not needed here)
-	);
+	// Calculate Mandelbrot set
+	DrawJulia(hwnd);
 
-	if (threadHandle == NULL) {
-		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
-	}
-	else {
-		// Release the thead handle
-		CloseHandle(threadHandle);
-	}
+	// Beep whe the thread has been completed
+	Beep(750, 300);
+	free(params);
+	return 0;
 }
 
+void StartMandelbrotThread(HWND hwnd) {
+    FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
+    if (params == NULL) {
+        MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
+        return;
+    }
+    params->hwnd = hwnd;
+
+    HANDLE threadHandle = CreateThread(
+        NULL,                 // Security attributes
+        0,                    // Stack size (0 uses the default value)
+        MandelbrotThread,     // Thread function
+        params,               // Parameter passed to the thread function
+        0,                    // Creation options (0 to start the thread immediately)
+        NULL                  // Thread ID (not needed here)
+    );
+
+    if (threadHandle == NULL) {
+        MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+        free(params);
+    } else {
+        // Release the thread handle
+        CloseHandle(threadHandle);
+    }
+}
+
+void StartJuliaThread(HWND hwnd) {
+    FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
+    if (params == NULL) {
+        MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
+        return;
+    }
+    params->hwnd = hwnd;
+
+    HANDLE threadHandle = CreateThread(
+        NULL,                 // Security attributes
+        0,                    // Stack size (0 uses the default value)
+        JuliaThread,          // Thread function
+        params,               // Parameter passed to the thread function
+        0,                    // Creation options (0 to start the thread immediately)
+        NULL                  // Thread ID (not needed here)
+    );
+
+    if (threadHandle == NULL) {
+        MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+        free(params);
+    } else {
+        // Release the thread handle
+        CloseHandle(threadHandle);
+    }
+}
 
 void DrawSelectionRect(HWND hwnd) {
 	HDC hdc = GetDC(hwnd); // Get the graphics context
@@ -282,6 +331,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			prevHeight = rect.bottom;
 			InvalidateRect(hwnd, NULL, TRUE); // Redraw only if dimensions changed
 		}
+		break;
+	case WM_RBUTTONUP:
+		StartJuliaThread(hwnd);
+		
 		break;
 	case WM_LBUTTONDOWN:
 		isSelecting = true;
