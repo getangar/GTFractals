@@ -6,3 +6,6 @@
 #define IDC_ITER 1005
 #define IDOK 1
 #define IDCANCEL 2
+#define IDC_PX 1006
+#define IDC_PY 1007
+#define IDC_JULIA 101
