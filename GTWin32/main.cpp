@@ -177,7 +177,7 @@ DWORD WINAPI JuliaThread(LPVOID lpParam) {
 	FractalParams* params = (FractalParams*)lpParam;
 	HWND hwnd = params->hwnd;
 
-	// Calculate Mandelbrot set
+	// Calculate Julia set
 	DrawJulia(hwnd);
 
 	// Beep whe the thread has been completed
