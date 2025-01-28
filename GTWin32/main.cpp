@@ -7,33 +7,41 @@
 
 
 // Global variables
-double xmin = -2.25, ymin = -1.5, xmax = 0.75, ymax = 1.5;
-int max_iter = 250;
-bool isSelecting = false;  // Indicates if a selection is in progress
-bool isResizing = false;   // Indicates if the window is being resized
-int prevWidth = 0, prevHeight = 0; // Previous window dimensions
-POINT startPoint, endPoint; // Start and end coordinates of the selection
-RECT selectionRect = { 0, 0, 0, 0 }; // Selection rectangle
+double xmin = -2.25, ymin = -1.5, xmax = 0.75, ymax = 1.5;	// Initial coordinates
+double px = 0.0, py = -1.0;									// Julia set parameters
+int max_iter = 250;											// Maximum number of iterations
 
-void AddMenus(HWND);
-void DrawMandelbrot(HWND);
-void UpdateMandelbrot(HWND);
-void DrawSelectionRect(HWND);
+// Flags to control the application
+bool isJulia = false;					// Indicates if the Julia set is being displayed
+bool isSelecting = false;				// Indicates if a selection is in progress
+bool isResizing = false;				// Indicates if the window is being resized
+int prevWidth = 0, prevHeight = 0;		// Previous window dimensions
+POINT startPoint, endPoint;				// Start and end coordinates of the selection
+RECT selectionRect = { 0, 0, 0, 0 };	// Selection rectangle
 
-DWORD WINAPI MandelbrotThread(LPVOID);
-DWORD WINAPI JuliaThread(LPVOID);
-void MandelbrotThread(HWND);
-void DrawJulia(HWND);
-
+// Structure to pass parameters to the thread function
 typedef struct {
 	HWND hwnd;
 } FractalParams;
 
+// Function prototypes for the main window
+void AddMenus(HWND);			// Add menus to the window
+void DrawMandelbrot(HWND);		// Draw the Mandelbrot set
+void DrawJulia(HWND);			// Draw the Julia set
+void UpdateFractal(HWND);		// Update the fractal based on the selection rectangle
+void DrawSelectionRect(HWND);	// Draw the selection rectangle
 
+// Function prototypes for the thread functions
+DWORD WINAPI MandelbrotThread(LPVOID);	// Thread function for the Mandelbrot set
+DWORD WINAPI JuliaThread(LPVOID);		// Thread function for the Julia set
+
+// Function prototypes for messages handling
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
+
+// Entry point
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	const LPCWSTR CLASS_NAME = L"GTWin32";
+	const LPCWSTR CLASS_NAME = L"GTFractals";
 
 	WNDCLASS wc = { 0 };
 	wc.lpfnWndProc = WndProc;
@@ -46,13 +54,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 0;
 	}
 
-	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"GTWin32", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 800, NULL, NULL, hInstance, NULL);
+	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"GTFractals", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 800, NULL, NULL, hInstance, NULL);
 
 	if (!hwnd) {
 		MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 		return 0;
 	}
 
+	// Add menus and display the main window	
 	AddMenus(hwnd);
 	ShowWindow(hwnd, nCmdShow);
 		
@@ -62,6 +71,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	prevWidth = rect.right;
 	prevHeight = rect.bottom;
 
+	// Message loop
 	MSG msg = { 0 };
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg);
@@ -238,7 +248,7 @@ void DrawSelectionRect(HWND hwnd) {
 	ReleaseDC(hwnd, hdc);
 }
 
-void UpdateMandelbrot(HWND hwnd) {
+void UpdateFractal(HWND hwnd) {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	int width = rect.right;
@@ -314,7 +324,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 		}
 		else {
-			MessageBox(hwnd, L"GTWin32\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
+			MessageBox(hwnd, L"GTFractals\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
 		}
 		break;
 	case WM_ENTERSIZEMOVE:
@@ -359,7 +369,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		if (isSelecting) {
 			isSelecting = false;
 			DrawSelectionRect(hwnd); // Erase the rectangle
-			UpdateMandelbrot(hwnd);
+			UpdateFractal(hwnd);
 		}
 		break;
 	case WM_PAINT:
