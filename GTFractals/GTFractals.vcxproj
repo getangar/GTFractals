@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{1427fa85-928d-47b6-a0f2-305e3654b51e}</ProjectGuid>
-    <RootNamespace>GTWin32</RootNamespace>
+    <RootNamespace>GTFractals</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

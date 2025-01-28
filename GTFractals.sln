@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTWin32", "GTWin32\GTWin32.vcxproj", "{1427FA85-928D-47B6-A0F2-305E3654B51E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTFractals", "GTFractals\GTFractals.vcxproj", "{1427FA85-928D-47B6-A0F2-305E3654B51E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
