@@ -86,6 +86,7 @@ int WINAPI WinMain(
 	return (int)msg.wParam;
 }
 
+// Main Menus
 void AddMenus(HWND hwnd) {
 	HMENU hMenu = CreateMenu();
 	HMENU hFileMenu = CreateMenu();
@@ -367,7 +368,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 		else if (LOWORD(wParam) == 106) {
 			if (DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), hwnd, DialogProc, 0) == IDOK) {
-				InvalidateRect(hwnd, NULL, TRUE); // Ridisegna con i nuovi parametri
+				InvalidateRect(hwnd, NULL, TRUE); // Force redraw
 			}
 		}
 		else {
@@ -391,7 +392,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_RBUTTONUP: // Right mouse button clicked
 	{
-		// Ottieni le coordinate del clic del mouse
+		// Get mouse coordinates
 		int mouseX = LOWORD(lParam);
 		int mouseY = HIWORD(lParam);
 
@@ -400,13 +401,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		int width = rect.right;
 		int height = rect.bottom;
 
-		// Converti le coordinate dello schermo nel piano complesso
+		// Convert screen coordinates to complex plane coordinates
 		px = xmin + (xmax - xmin) * mouseX / width;
 		py = ymin + (ymax - ymin) * mouseY / height;
 
-		// Avvia il thread per il frattale di Julia
-
+		// Start Julia set thread
 		StartJuliaThread(hwnd);
+
+		// Force redraw
 		InvalidateRect(hwnd, NULL, TRUE);
 	}
 		
