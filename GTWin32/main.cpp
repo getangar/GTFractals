@@ -123,6 +123,7 @@ void AddMenus(HWND hwnd) {
 	SetMenu(hwnd, hMenu);
 }
 
+// Function to draw the Mandelbrot set
 void DrawMandelbrot(HWND hwnd) {	
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
@@ -156,10 +157,12 @@ void DrawMandelbrot(HWND hwnd) {
 	EndPaint(hwnd, &ps);	
 }
 
+// Function to draw the Julia set
 void DrawJulia(HWND hwnd) {
 
 }
 
+// Function to draw the Mandelbrot set in a separate thread
 DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
 	FractalParams* params = (FractalParams*)lpParam;
 	HWND hwnd = params->hwnd;
@@ -173,6 +176,7 @@ DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
 	return 0;
 }
 
+// Function to draw the Julia set in a separate thread
 DWORD WINAPI JuliaThread(LPVOID lpParam) {
 	FractalParams* params = (FractalParams*)lpParam;
 	HWND hwnd = params->hwnd;
@@ -186,6 +190,7 @@ DWORD WINAPI JuliaThread(LPVOID lpParam) {
 	return 0;
 }
 
+// Function to start the Mandelbrot thread
 void StartMandelbrotThread(HWND hwnd) {
 	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
 	if (params == NULL) {
@@ -212,6 +217,7 @@ void StartMandelbrotThread(HWND hwnd) {
 	}
 }
 
+// Function to start the Julia thread
 void StartJuliaThread(HWND hwnd) {
 	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
 	if (params == NULL) {
@@ -238,6 +244,7 @@ void StartJuliaThread(HWND hwnd) {
 	}
 }
 
+// Function to draw the selection rectangle
 void DrawSelectionRect(HWND hwnd) {
 	HDC hdc = GetDC(hwnd); // Get the graphics context
 
@@ -253,6 +260,7 @@ void DrawSelectionRect(HWND hwnd) {
 	ReleaseDC(hwnd, hdc);
 }
 
+// Function to update the fractal based on the selection rectangle
 void UpdateFractal(HWND hwnd) {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
@@ -273,6 +281,7 @@ void UpdateFractal(HWND hwnd) {
 	InvalidateRect(hwnd, NULL, TRUE); // Force redraw
 }
 
+// Function to reset the Mandelbrot set
 void ResetMandelbrot(HWND hwnd) {
 	// Reset to initial coordinates
 	xmin = -2.25;
@@ -284,7 +293,7 @@ void ResetMandelbrot(HWND hwnd) {
 	InvalidateRect(hwnd, NULL, TRUE);
 }
 
-
+// Function to show the Save File dialog
 bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 	OPENFILENAME ofn = { 0 };
 	ZeroMemory(&ofn, sizeof(ofn));
@@ -300,10 +309,10 @@ bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 	return GetSaveFileName(&ofn);
 }
 
-
+// Message processing function
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
-	case WM_COMMAND:
+	case WM_COMMAND: // Handle menu commands
 		if (LOWORD(wParam) == 1) {
 			PostQuitMessage(0);
 		}        
@@ -332,10 +341,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			MessageBox(hwnd, L"GTFractals\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
 		}
 		break;
-	case WM_ENTERSIZEMOVE:
+	case WM_ENTERSIZEMOVE: // The user is resizing the window
 		isResizing = true;
 		break;
-	case WM_EXITSIZEMOVE:
+	case WM_EXITSIZEMOVE: // The user has finished resizing the window
 		isResizing = false;
 
 		// Check if dimensions have changed
@@ -347,11 +356,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			InvalidateRect(hwnd, NULL, TRUE); // Redraw only if dimensions changed
 		}
 		break;
-	case WM_RBUTTONUP:
+	case WM_RBUTTONUP: // Right mouse button clicked
 		StartJuliaThread(hwnd);
 		
 		break;
-	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDOWN: // Left mouse button clicked
 		isSelecting = true;
 		startPoint.x = LOWORD(lParam);
 		startPoint.y = HIWORD(lParam);
@@ -360,7 +369,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		selectionRect.right = startPoint.x;
 		selectionRect.bottom = startPoint.y;
 		break;
-	case WM_MOUSEMOVE:
+	case WM_MOUSEMOVE: // Mouse moved
 		if (isSelecting) {
 			DrawSelectionRect(hwnd); // Erase the previous rectangle
 			endPoint.x = LOWORD(lParam);
@@ -370,20 +379,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			DrawSelectionRect(hwnd); // Draw the new rectangle
 		}
 		break;
-	case WM_LBUTTONUP:
+	case WM_LBUTTONUP: // Left mouse button released
 		if (isSelecting) {
 			isSelecting = false;
 			DrawSelectionRect(hwnd); // Erase the rectangle
 			UpdateFractal(hwnd);
 		}
 		break;
-	case WM_PAINT:
+	case WM_PAINT: // Window needs to be redrawn
 		if (!isResizing) { // Avoid drawing during resizing or moving
 			//DrawMandelbrot(hwnd);
 			StartMandelbrotThread(hwnd);			
 		}
 		break;
-	case WM_DESTROY:
+	case WM_DESTROY: // Window is being destroyed
 		PostQuitMessage(0);
 		break;
 	default:
