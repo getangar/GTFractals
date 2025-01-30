@@ -66,10 +66,10 @@ int WINAPI WinMain(
 		return 0;
 	}
 
-	// Add menus and display the main window	
+	// Add menus and display the main window
 	AddMenus(hwnd);
 	ShowWindow(hwnd, nCmdShow);
-		
+
 	// Set initial dimensions
 	RECT rect;
 	GetClientRect(hwnd, &rect);
@@ -125,7 +125,7 @@ void AddMenus(HWND hwnd) {
 }
 
 // Function to draw the Mandelbrot set
-void DrawMandelbrot(HWND hwnd) {	
+void DrawMandelbrot(HWND hwnd) {
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
 
@@ -155,7 +155,7 @@ void DrawMandelbrot(HWND hwnd) {
 		}
 	}
 
-	EndPaint(hwnd, &ps);	
+	EndPaint(hwnd, &ps);
 }
 
 // Function to draw the Julia set
@@ -349,11 +349,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_COMMAND: // Handle menu commands
 		if (LOWORD(wParam) == 1) {
 			PostQuitMessage(0);
-		}        
+		}
 		else if (LOWORD(wParam) == 2) { // Reset
 			ResetMandelbrot(hwnd);
 		}
-		else if (LOWORD(wParam) == 101) {			
+		else if (LOWORD(wParam) == 101) {
 		}
 		else if (LOWORD(wParam) == 102) {
 		}
@@ -362,7 +362,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			if (ShowSaveFileDialog(hwnd, filePath, MAX_PATH)) {
 				HDC hdc = GetDC(hwnd);
-				
+
 				ReleaseDC(hwnd, hdc);
 			}
 		}
@@ -411,7 +411,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		// Force redraw
 		InvalidateRect(hwnd, NULL, TRUE);
 	}
-		
+
 		break;
 	case WM_LBUTTONDOWN: // Left mouse button clicked
 		isSelecting = true;
@@ -442,7 +442,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_PAINT: // Window needs to be redrawn
 		if (!isResizing && !isJulia) { // Avoid drawing during resizing or moving
 			//DrawMandelbrot(hwnd);
-			StartMandelbrotThread(hwnd);			
+			StartMandelbrotThread(hwnd);
 		}
 		else if (!isResizing && isJulia) {
 			DrawJulia(hwnd);
