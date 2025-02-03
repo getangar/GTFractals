@@ -1,17 +1,17 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-// Imposta la versione minima di Windows a Windows 98
+// Set the minimum Windows version to Windows 98
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0400
 #endif
 
-// Imposta la versione minima della Windows API a Windows 98
+// Set the minimum Windows API version to Windows 98
 #ifndef WINVER
 #define WINVER 0x0400
 #endif
 
-// Controllo architettura
+// Architecture detection
 #if !defined(_AMD64_) && !defined(_X86_) && !defined(_ARM_) && !defined(_ARM64_)
 #if defined(_M_X64) || defined(__x86_64__)
 #define _AMD64_
