@@ -49,31 +49,42 @@ int WINAPI WinMain(
 	_In_ LPSTR lpCmdLine,
 	_In_ int nCmdShow
 ) {
-	const LPCWSTR CLASS_NAME = L"GTFractals";
+	LPCWSTR CLASS_NAME = L"GTFractals";  // Definizione corretta
 
-	WNDCLASS wc = { 0 };
+	WNDCLASSEX wc = { 0 };
+	wc.cbSize = sizeof(WNDCLASSEX);  // Imposta esplicitamente cbSize
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // Assicurati che sia impostato
 
-	if (!RegisterClass(&wc)) {
-		MessageBox(NULL, L"Window Registration Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
+	// Carica l'icona
+	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP_ICON));
+	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP_ICON));
+
+	if (!RegisterClassEx(&wc)) {
+		DWORD error = GetLastError();
+		wchar_t errorMessage[256];
+		wsprintf(errorMessage, L"Window Registration Failed! Error Code: %d", error);
+		MessageBox(NULL, errorMessage, L"Error", MB_ICONEXCLAMATION | MB_OK);
 		return 0;
 	}
 
-	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"GTFractals", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 800, NULL, NULL, hInstance, NULL);
+	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"GTFractals",
+		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 800,
+		NULL, NULL, hInstance, NULL);
 
 	if (!hwnd) {
 		MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
 		return 0;
 	}
 
-	// Add menus and display the main window
+	// Aggiungi menu e visualizza la finestra principale
 	AddMenus(hwnd);
 	ShowWindow(hwnd, nCmdShow);
 
-	// Set initial dimensions
+	// Imposta le dimensioni iniziali
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	prevWidth = rect.right;
@@ -88,6 +99,7 @@ int WINAPI WinMain(
 
 	return (int)msg.wParam;
 }
+
 
 // Main Menus
 void AddMenus(HWND hwnd) {
@@ -119,6 +131,7 @@ void AddMenus(HWND hwnd) {
 	AppendMenu(hHelpMenu, MF_SEPARATOR, 0, NULL);
 	AppendMenu(hHelpMenu, MF_STRING, 3, L"About");
 
+	// Add submenus to the main menu
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"Edit");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hDrawMenu, L"Draw");
