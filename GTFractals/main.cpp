@@ -14,6 +14,7 @@
 double xmin = -2.25, ymin = -1.5, xmax = 0.75, ymax = 1.5;	// Initial coordinates
 double px = 0.0, py = -1.0;									// Julia set parameters
 int max_iter = 250;											// Maximum number of iterations
+bool isThreadRunning = false;								// Check if any thread is running
 
 // Flags to control the application
 bool isJulia = false;					// Indicates if the Julia set is being displayed
@@ -128,36 +129,46 @@ void AddMenus(HWND hwnd) {
 
 // Function to draw the Mandelbrot set in a separate thread
 DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
+	DebugPrint("MandelbrotThread started\n");
+
 	FractalParams* params = (FractalParams*)lpParam;
 	HWND hwnd = params->hwnd;
 
-	// Calculate Mandelbrot set
 	DrawMandelbrot(hwnd);
 
 	DebugPrint("MandelbrotThread finished\n");
 
-	// Beep whe the thread has been completed
-	Beep(750, 300);
+	isThreadRunning = false; // Reset flag quando il thread termina
 	free(params);
 	return 0;
 }
 
 // Function to draw the Julia set in a separate thread
 DWORD WINAPI JuliaThread(LPVOID lpParam) {
+	DebugPrint("JuliaThread started\n");
+
 	FractalParams* params = (FractalParams*)lpParam;
 	HWND hwnd = params->hwnd;
 
-	// Calculate Julia set
 	DrawJulia(hwnd);
 
-	// Beep whe the thread has been completed
-	Beep(750, 300);
+	DebugPrint("JuliaThread finished\n");
+
+	isThreadRunning = false; // Reset flag quando il thread termina
 	free(params);
 	return 0;
 }
 
 // Function to start the Mandelbrot thread
 void StartMandelbrotThread(HWND hwnd) {
+	if (isThreadRunning) {
+		//DebugPrint("Thread already running, skipping...\n");
+		return;
+	}
+
+	isThreadRunning = true;
+	DebugPrint("Starting Mandelbrot thread\n");
+
 	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
 	if (params == NULL) {
 		MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
@@ -165,26 +176,27 @@ void StartMandelbrotThread(HWND hwnd) {
 	}
 	params->hwnd = hwnd;
 
-	HANDLE threadHandle = CreateThread(
-		NULL,                 // Security attributes
-		0,                    // Stack size (0 uses the default value)
-		MandelbrotThread,     // Thread function
-		params,               // Parameter passed to the thread function
-		0,                    // Creation options (0 to start the thread immediately)
-		NULL                  // Thread ID (not needed here)
-	);
-
+	HANDLE threadHandle = CreateThread(NULL, 0, MandelbrotThread, params, 0, NULL);
 	if (threadHandle == NULL) {
+		DebugPrint("Error creating Mandelbrot thread\n");
 		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
 		free(params);
-	} else {
-		// Release the thread handle
+		isThreadRunning = false;
+	}
+	else {
 		CloseHandle(threadHandle);
 	}
 }
 
 // Function to start the Julia thread
 void StartJuliaThread(HWND hwnd) {
+	if (isThreadRunning) {		
+		return;
+	}
+
+	isThreadRunning = true;
+	DebugPrint("Starting Julia thread\n");
+
 	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
 	if (params == NULL) {
 		MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
@@ -192,20 +204,14 @@ void StartJuliaThread(HWND hwnd) {
 	}
 	params->hwnd = hwnd;
 
-	HANDLE threadHandle = CreateThread(
-		NULL,                 // Security attributes
-		0,                    // Stack size (0 uses the default value)
-		JuliaThread,          // Thread function
-		params,               // Parameter passed to the thread function
-		0,                    // Creation options (0 to start the thread immediately)
-		NULL                  // Thread ID (not needed here)
-	);
-
+	HANDLE threadHandle = CreateThread(NULL, 0, JuliaThread, params, 0, NULL);
 	if (threadHandle == NULL) {
+		DebugPrint("Error creating Julia thread\n");
 		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
 		free(params);
-	} else {
-		// Release the thread handle
+		isThreadRunning = false;
+	}
+	else {
 		CloseHandle(threadHandle);
 	}
 }
