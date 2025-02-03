@@ -325,7 +325,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 		}
 		else {
-			MessageBox(hwnd, L"GTFractals\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
+			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUT_DIALOG), hwnd, (DLGPROC)AboutDialogProc);			
+			//MessageBox(hwnd, L"GTFractals\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
 		}
 		break;
 	case WM_ENTERSIZEMOVE: // The user is resizing the window
