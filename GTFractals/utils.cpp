@@ -1,8 +1,3 @@
-#ifndef _AMD64_
-#define _AMD64_
-#endif
-
-
 #include "utils.h"
 
 void DebugPrint(const char* format, ...) {

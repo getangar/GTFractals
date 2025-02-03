@@ -237,17 +237,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DialogProc.cpp" />
-    <ClCompile Include="Julia.cpp" />
+    <ClCompile Include="dialogproc.cpp" />
+    <ClCompile Include="julia.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mandelbrot.cpp" />
+    <ClCompile Include="mandelbrot.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dialog.h" />
     <ClInclude Include="global.h" />
-    <ClInclude Include="Julia.h" />
-    <ClInclude Include="Mandelbrot.h" />
+    <ClInclude Include="julia.h" />
+    <ClInclude Include="mandelbrot.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
