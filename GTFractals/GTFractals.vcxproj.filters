@@ -18,13 +18,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DialogProc.cpp">
+    <ClCompile Include="dialogproc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mandelbrot.cpp">
+    <ClCompile Include="mandelbrot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Julia.cpp">
+    <ClCompile Include="julia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
@@ -41,13 +41,16 @@
     <ClInclude Include="global.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mandelbrot.h">
+    <ClInclude Include="mandelbrot.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Julia.h">
+    <ClInclude Include="julia.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="utils.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="platform.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
