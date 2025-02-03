@@ -131,6 +131,7 @@ void AddMenus(HWND hwnd) {
 	AppendMenu(hHelpMenu, MF_SEPARATOR, 0, NULL);
 	AppendMenu(hHelpMenu, MF_STRING, 3, L"About");
 
+	// Add submenus to the main menu
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"Edit");
 	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hDrawMenu, L"Draw");
