@@ -9,3 +9,4 @@
 #define IDC_PX 1006
 #define IDC_PY 1007
 #define IDC_JULIA 101
+#define IDI_APP_ICON 101
