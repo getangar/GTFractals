@@ -7,6 +7,7 @@
 
 #include "Mandelbrot.h"
 #include "Julia.h"
+#include "utils.h"
 
 
 // Global variables
@@ -132,6 +133,8 @@ DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
 
 	// Calculate Mandelbrot set
 	DrawMandelbrot(hwnd);
+
+	DebugPrint("MandelbrotThread finished\n");
 
 	// Beep whe the thread has been completed
 	Beep(750, 300);
