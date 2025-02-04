@@ -237,6 +237,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="colors.cpp" />
     <ClCompile Include="dialogproc.cpp" />
     <ClCompile Include="julia.cpp" />
     <ClCompile Include="main.cpp" />
@@ -244,6 +245,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="colors.h" />
     <ClInclude Include="dialog.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="julia.h" />
