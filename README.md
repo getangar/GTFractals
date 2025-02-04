@@ -18,8 +18,7 @@ GTFractals **is not intended to be a professional tool**. Instead, it is a perso
 - Interactive zooming on the Mandelbrot set.
 - Seamless switching between Mandelbrot and Julia sets.
 - Lightweight, minimalistic interface with no external dependencies.
-- Fully developed in **Visual C++**, targeting Windows (x86).
-- Compatible with **Windows 98 and later**.
+- Fully developed in **Visual C++**, targeting Windows (x86, x64, ARM and ARM64).
 
 ## 🛠️ **Building the Project**
 GTFractals is designed to be built using **Microsoft Visual Studio**, specifically with **Visual C++**.
