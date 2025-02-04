@@ -18,6 +18,7 @@ bool isThreadRunning = false;								// Check if any thread is running
 
 // Flags to control the application
 bool isJulia = false;					// Indicates if the Julia set is being displayed
+bool isFirstJulia = true;				// Indicates if it's the first time the Julia set is displayed
 bool isSelecting = false;				// Indicates if a selection is in progress
 bool isResizing = false;				// Indicates if the window is being resized
 int prevWidth = 0, prevHeight = 0;		// Previous window dimensions
@@ -358,6 +359,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		// Convert screen coordinates to complex plane coordinates
 		px = xmin + (xmax - xmin) * mouseX / width;
 		py = ymin + (ymax - ymin) * mouseY / height;
+
+		if (isFirstJulia) {
+			// Reset to initial coordinates
+			xmin = -1.5;
+			xmax = 1.5;
+			ymin = -1.5;
+			ymax = 1.5;
+			isFirstJulia = false;
+		}
+
+		// Set flag to display Julia set
+		isJulia = true;
 
 		// Start Julia set thread
 		StartJuliaThread(hwnd);
