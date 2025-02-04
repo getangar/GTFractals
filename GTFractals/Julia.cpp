@@ -1,5 +1,4 @@
 #include "Julia.h"
-#include "colors.h"
 
 // Function to draw the Julia set
 void DrawJulia(HWND hwnd) {
@@ -35,7 +34,7 @@ void DrawJulia(HWND hwnd) {
 				color = GetModernColor(iteration, max_iter);
 				break;
 			case 1:
-				color = GetDargGradientColor(iteration, max_iter);
+				color = GetDarkGradientColor(iteration, max_iter);
 				break;
 			case 2:
 				color = GetVintageColor(iteration, max_iter);

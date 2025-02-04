@@ -1,7 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "platform.h"
 #include <windows.h>
 #include <stdio.h>
 #include <format>
@@ -10,6 +9,7 @@
 
 
 #include "global.h"
+#include "platform.h"
 
 void DebugPrint(const char* format, ...);
 

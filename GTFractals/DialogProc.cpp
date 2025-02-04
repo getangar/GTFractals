@@ -1,7 +1,4 @@
-#include "global.h"
-#include "resource.h"
-#include <windows.h>
-#include <stdio.h>
+#include "dialog.h"
 
 // Callback for the dialog
 INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {

@@ -2,7 +2,7 @@
 #define MANDELBROT_H
 
 #include <windows.h>
-
+#include "colors.h"
 #include "global.h"
 
 

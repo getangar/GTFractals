@@ -1,5 +1,4 @@
 #include "Mandelbrot.h"
-#include "colors.h"
 
 // Function to draw the Mandelbrot set
 void DrawMandelbrot(HWND hwnd) {
@@ -33,7 +32,7 @@ void DrawMandelbrot(HWND hwnd) {
 				color = GetModernColor(iteration, max_iter);
 				break;
 			case 1:
-				color = GetDargGradientColor(iteration, max_iter);
+				color = GetDarkGradientColor(iteration, max_iter);
 				break;
 			case 2:
 				color = GetVintageColor(iteration, max_iter);
