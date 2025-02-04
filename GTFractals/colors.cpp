@@ -32,6 +32,8 @@ static COLORREF vga_palette[256] = {
     // Continue filling up to 256 colors...
 };
 
+
+// Color pattern Modern
 COLORREF GetModernColor(int iterations, int max_iter) {
     if (iterations == max_iter) {
         return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
@@ -45,6 +47,8 @@ COLORREF GetModernColor(int iterations, int max_iter) {
     return RGB(red, green, blue);
 }
 
+
+// Color pattern Dark Gradient
 COLORREF GetDarkGradientColor(int iterations, int max_iter) {
     if (iterations == max_iter || iterations == 0) {
         return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
@@ -74,6 +78,7 @@ COLORREF GetDarkGradientColor(int iterations, int max_iter) {
     return wikipedia_palette[iterations % 16];
 }
 
+// Color pattern Vintage (VGA 256 color palette)
 COLORREF GetVintageColor(int iterations, int max_iter) {
     if (iterations == max_iter) {
         return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
