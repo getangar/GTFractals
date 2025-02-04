@@ -1,5 +1,5 @@
 #include "Mandelbrot.h"
-
+#include "colors.h"
 
 // Function to draw the Mandelbrot set
 void DrawMandelbrot(HWND hwnd) {
@@ -27,7 +27,22 @@ void DrawMandelbrot(HWND hwnd) {
 				++iteration;
 			}
 
-			COLORREF color = (iteration == max_iter) ? RGB(0, 0, 0) : RGB(255 - (iteration * 10) % 255, 255 - (iteration * 5) % 255, 255);
+			COLORREF color;
+			switch (selectedColorPattern) {
+			case 0:
+				color = GetModernColor(iteration, max_iter);
+				break;
+			case 1:
+				color = GetDargGradientColor(iteration, max_iter);
+				break;
+			case 2:
+				color = GetVintageColor(iteration, max_iter);
+				break;
+			default:
+				color = GetModernColor(iteration, max_iter);
+				break;
+			}
+
 			SetPixel(hdc, px, py, color);
 		}
 	}

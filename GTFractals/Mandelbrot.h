@@ -5,6 +5,7 @@
 
 #include "global.h"
 
+
 void DrawMandelbrot(HWND); // Draw the Mandelbrot set
 
 #endif
