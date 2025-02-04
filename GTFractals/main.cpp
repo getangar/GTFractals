@@ -8,6 +8,7 @@
 #include "Mandelbrot.h"
 #include "Julia.h"
 #include "utils.h"
+#include "export.h"
 
 
 // Global variables
@@ -289,11 +290,11 @@ bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
-	ofn.lpstrFilter = L"JPEG Files\0*.jpg\0All Files\0*.*\0";
+	ofn.lpstrFilter = L"BMP Files\0*.bmp\0All Files\0*.*\0";
 	ofn.lpstrFile = filePath;
 	ofn.nMaxFile = filePathSize;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
-	ofn.lpstrDefExt = L"jpg";
+	ofn.lpstrDefExt = L"bmp";
 
 	return GetSaveFileName(&ofn);
 }
@@ -316,9 +317,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			WCHAR filePath[MAX_PATH] = { 0 };
 
 			if (ShowSaveFileDialog(hwnd, filePath, MAX_PATH)) {
-				HDC hdc = GetDC(hwnd);
-
-				ReleaseDC(hwnd, hdc);
+				if (!SaveBitmap(hwnd, filePath)) {
+					MessageBox(hwnd, L"Failed to save image.", L"Error", MB_OK | MB_ICONERROR);
+				}				
 			}
 		}
 		else if (LOWORD(wParam) == 106) {

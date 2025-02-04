@@ -239,6 +239,7 @@
   <ItemGroup>
     <ClCompile Include="colors.cpp" />
     <ClCompile Include="dialogproc.cpp" />
+    <ClCompile Include="export.cpp" />
     <ClCompile Include="julia.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mandelbrot.cpp" />
@@ -247,6 +248,7 @@
   <ItemGroup>
     <ClInclude Include="colors.h" />
     <ClInclude Include="dialog.h" />
+    <ClInclude Include="export.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="julia.h" />
     <ClInclude Include="mandelbrot.h" />
