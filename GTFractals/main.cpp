@@ -305,13 +305,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_COMMAND: // Handle menu commands
 		if (LOWORD(wParam) == 1) {
 			PostQuitMessage(0);
+
+			break;
 		}
 		else if (LOWORD(wParam) == 2) { // Reset
 			ResetMandelbrot(hwnd);
+
+			break;
 		}
 		else if (LOWORD(wParam) == 101) {
+			break;
 		}
 		else if (LOWORD(wParam) == 102) {
+			break;
 		}
 		else if (LOWORD(wParam) == 103) {
 			WCHAR filePath[MAX_PATH] = { 0 };
@@ -321,11 +327,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 					MessageBox(hwnd, L"Failed to save image.", L"Error", MB_OK | MB_ICONERROR);
 				}				
 			}
+
+			break;
+		}
+		else if (LOWORD(wParam) == 105) {
+			if (!PrintFractal(hwnd)) {
+				MessageBox(hwnd, L"Failed to print.", L"Error", MB_OK | MB_ICONERROR);
+			}			
+			break;
 		}
 		else if (LOWORD(wParam) == 106) {
 			if (DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), hwnd, DialogProc, 0) == IDOK) {
 				InvalidateRect(hwnd, NULL, TRUE); // Force redraw
 			}
+
+			break;
 		}
 		else {
 			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUT_DIALOG), hwnd, (DLGPROC)AboutDialogProc);						

@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+// Function prototypes
 BOOL SaveBitmap(HWND, LPCWSTR);
+BOOL PrintFractal(HWND);
 
 #endif
