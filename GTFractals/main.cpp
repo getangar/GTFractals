@@ -15,6 +15,7 @@ double xmin = -2.25, ymin = -1.5, xmax = 0.75, ymax = 1.5;	// Initial coordinate
 double px = 0.0, py = -1.0;									// Julia set parameters
 int max_iter = 250;											// Maximum number of iterations
 bool isThreadRunning = false;								// Check if any thread is running
+int selectedColorPattern = 2;								// Default color to "Vintage"
 
 // Flags to control the application
 bool isJulia = false;					// Indicates if the Julia set is being displayed

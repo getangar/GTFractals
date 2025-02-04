@@ -40,6 +40,17 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		// Set Julia checkbox
 		CheckDlgButton(hDlg, IDC_JULIA, isJulia ? BST_CHECKED : BST_UNCHECKED);
 
+		// Get the handle to the dropdown list
+		HWND hCombo = GetDlgItem(hDlg, IDC_COLOR_PATTERN);
+
+		// Add items to the dropdown
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Modern");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Dark Gradient");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Vintage");
+
+		// Set default selection
+		SendMessage(hCombo, CB_SETCURSEL, 2, 0); // Selects "Vintage"
+
 		return TRUE;
 	}
 
@@ -76,6 +87,12 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 			// Read Julia checkbox
 			isJulia = IsDlgButtonChecked(hDlg, IDC_JULIA) == BST_CHECKED;
+
+			// Get selected color pattern
+			int selectedIndex = (int)SendDlgItemMessage(hDlg, IDC_COLOR_PATTERN, CB_GETCURSEL, 0, 0);
+
+			// Save selected index in a global or static variable
+			selectedColorPattern = selectedIndex;
 
 			EndDialog(hDlg, IDOK);
 			return TRUE;

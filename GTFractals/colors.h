@@ -8,4 +8,6 @@ COLORREF GetModernColor(int, int);
 
 COLORREF GetVintageColor(int, int);
 
+COLORREF GetDargGradientColor(int, int);
+
 #endif

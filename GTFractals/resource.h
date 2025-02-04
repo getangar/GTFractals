@@ -11,4 +11,4 @@
 #define IDC_PX 1006
 #define IDC_PY 1007
 #define IDC_JULIA 101
-
+#define IDC_COLOR_PATTERN 2001

@@ -27,7 +27,22 @@ void DrawMandelbrot(HWND hwnd) {
 				++iteration;
 			}
 
-			COLORREF color = GetVintageColor(iteration, max_iter);
+			COLORREF color;
+			switch (selectedColorPattern) {
+			case 0:
+				color = GetModernColor(iteration, max_iter);
+				break;
+			case 1:
+				color = GetDargGradientColor(iteration, max_iter);
+				break;
+			case 2:
+				color = GetVintageColor(iteration, max_iter);
+				break;
+			default:
+				color = GetModernColor(iteration, max_iter);
+				break;
+			}
+
 			SetPixel(hdc, px, py, color);
 		}
 	}
