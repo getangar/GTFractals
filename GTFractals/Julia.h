@@ -2,7 +2,7 @@
 #define JULIA_H
 
 #include <windows.h>
-
+#include "colors.h"
 #include "global.h"
 
 void DrawJulia(HWND); // Draw the Julia set

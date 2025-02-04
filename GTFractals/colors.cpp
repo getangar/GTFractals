@@ -45,7 +45,7 @@ COLORREF GetModernColor(int iterations, int max_iter) {
     return RGB(red, green, blue);
 }
 
-COLORREF GetDargGradientColor(int iterations, int max_iter) {
+COLORREF GetDarkGradientColor(int iterations, int max_iter) {
     if (iterations == max_iter || iterations == 0) {
         return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
     }

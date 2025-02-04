@@ -51,17 +51,17 @@ int WINAPI WinMain(
 	_In_ LPSTR lpCmdLine,
 	_In_ int nCmdShow
 ) {
-	LPCWSTR CLASS_NAME = L"GTFractals";  // Definizione corretta
+	LPCWSTR CLASS_NAME = L"GTFractals";  // Window class name
 
 	WNDCLASSEX wc = { 0 };
-	wc.cbSize = sizeof(WNDCLASSEX);  // Imposta esplicitamente cbSize
+	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.lpfnWndProc = WndProc;
 	wc.hInstance = hInstance;
 	wc.lpszClassName = CLASS_NAME;
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // Assicurati che sia impostato
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 
-	// Carica l'icona
+	// Load the icon
 	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP_ICON));
 	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP_ICON));
 
@@ -82,11 +82,11 @@ int WINAPI WinMain(
 		return 0;
 	}
 
-	// Aggiungi menu e visualizza la finestra principale
+	// Add menus to the window
 	AddMenus(hwnd);
 	ShowWindow(hwnd, nCmdShow);
 
-	// Imposta le dimensioni iniziali
+	// Save the initial window dimensions
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	prevWidth = rect.right;
@@ -153,7 +153,7 @@ DWORD WINAPI MandelbrotThread(LPVOID lpParam) {
 
 	DebugPrint("MandelbrotThread finished\n");
 
-	isThreadRunning = false; // Reset flag quando il thread termina
+	isThreadRunning = false; // Reset flag when the thread finishes
 	free(params);
 	return 0;
 }
@@ -169,7 +169,7 @@ DWORD WINAPI JuliaThread(LPVOID lpParam) {
 
 	DebugPrint("JuliaThread finished\n");
 
-	isThreadRunning = false; // Reset flag quando il thread termina
+	isThreadRunning = false; // Reset flag when the thread finishes
 	free(params);
 	return 0;
 }
@@ -327,8 +327,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 		}
 		else {
-			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUT_DIALOG), hwnd, (DLGPROC)AboutDialogProc);			
-			//MessageBox(hwnd, L"GTFractals\n\nA simple Mandelbrot set viewer\n(c)Copyright 2025 by Gennaro E. Tangari", L"About", MB_OK);
+			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUT_DIALOG), hwnd, (DLGPROC)AboutDialogProc);						
 		}
 		break;
 	case WM_ENTERSIZEMOVE: // The user is resizing the window
@@ -408,12 +407,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 		break;
 	case WM_PAINT: // Window needs to be redrawn
-		if (!isResizing && !isJulia) { // Avoid drawing during resizing or moving
-			//DrawMandelbrot(hwnd);
+		if (!isResizing && !isJulia) { // Avoid drawing during resizing or moving			
 			StartMandelbrotThread(hwnd);
 		}
 		else if (!isResizing && isJulia) {
-			DrawJulia(hwnd);
+			StartJuliaThread(hwnd);			
 		}
 		break;
 	case WM_DESTROY: // Window is being destroyed
