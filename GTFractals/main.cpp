@@ -408,12 +408,37 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_MOUSEMOVE: // Mouse moved
 		if (isSelecting) {
-			DrawSelectionRect(hwnd); // Erase the previous rectangle
-			endPoint.x = LOWORD(lParam);
-			endPoint.y = HIWORD(lParam);
-			selectionRect.right = endPoint.x;
-			selectionRect.bottom = endPoint.y;
-			DrawSelectionRect(hwnd); // Draw the new rectangle
+			// Erase previous selection
+			DrawSelectionRect(hwnd);
+
+			// Get new selection end point
+			int mouseX = LOWORD(lParam);
+			int mouseY = HIWORD(lParam);
+
+			// Calculate aspect ratio
+			RECT clientRect;
+			GetClientRect(hwnd, &clientRect);
+			double aspectRatio = (double)(clientRect.right - clientRect.left) / (clientRect.bottom - clientRect.top);
+
+			// Compute new selection keeping aspect ratio
+			int width = abs(mouseX - startPoint.x);
+			int height = abs(mouseY - startPoint.y);
+
+			if (width / (double)height > aspectRatio) {
+				// Adjust height based on width
+				height = (int)(width / aspectRatio);
+			}
+			else {
+				// Adjust width based on height
+				width = (int)(height * aspectRatio);
+			}
+
+			// Set new selection rectangle
+			selectionRect.right = (mouseX > startPoint.x) ? startPoint.x + width : startPoint.x - width;
+			selectionRect.bottom = (mouseY > startPoint.y) ? startPoint.y + height : startPoint.y - height;
+
+			// Draw new selection
+			DrawSelectionRect(hwnd);
 		}
 		break;
 	case WM_LBUTTONUP: // Left mouse button released
