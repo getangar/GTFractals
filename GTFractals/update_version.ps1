@@ -1,3 +1,5 @@
+Write-Host "Running update_version.ps1"
+
 $versionFile = "Version.rc"
 $versionPattern = '(?<=#define VERSION_BUILD )\d+'
 
@@ -15,4 +17,8 @@ Write-Output "Updated build number to $newBuildNumber"
 
 # Esporta la versione per GitHub Actions
 $versionOutput = "0.1.$newBuildNumber"
-Write-Output "VERSION=$versionOutput" | Out-File -FilePath $env:GITHUB_ENV -Append
+if ($env:GITHUB_ENV) {
+    "VERSION=$versionOutput" | Out-File -FilePath $env:GITHUB_ENV -Append
+} else {
+    Write-Output "Running locally, skipping GitHub Actions export."
+}
