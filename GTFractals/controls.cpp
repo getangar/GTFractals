@@ -16,10 +16,23 @@ void CreateStatusBar(HWND hwnd) {
 		return;
 	}
 
-	// Set the parts of the status bar
-	int statusWidths[] = { 200, 400, 600, 800, -1 };
-	SendMessage(hStatusBar, SB_SETPARTS, 5, (LPARAM)statusWidths);
+	// Set the status bar parts
+	RECT rcClient;
+	GetClientRect(hwnd, &rcClient);
+	int width = rcClient.right;
 
+	int statusWidths[] = {
+		width * 1 / 6,   // xmin
+		width * 2 / 6,   // ymin
+		width * 3 / 6,   // xmax
+		width * 4 / 6,   // ymax
+		width * 5 / 6,   // Iterations
+		-1               // Progress Bar (last column)
+	};
+
+	SendMessage(hStatusBar, SB_SETPARTS, 6, (LPARAM)statusWidths);
+
+	// Create the progress bar
 	RECT rcStatus;
 	GetClientRect(hStatusBar, &rcStatus);
 	
@@ -52,12 +65,29 @@ void UpdateStatusBar() {
 	SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);
 
 	swprintf(buffer, 256, L"Iterations: %d", max_iter);
+	SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);	
+}
+
+void UpdateStatusBarText() {
+	wchar_t buffer[128];
+
+	// Update xmin
+	swprintf(buffer, 128, L"X-Min: %.5f", xmin);
 	SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);
 
-	const wchar_t * colorScheme = (selectedColorPattern == 0) ? L"Modern" :
-								  (selectedColorPattern == 1) ? L"Dark Gradient" :
-								  (selectedColorPattern == 2) ? L"Vintage" : L"Unknown";
+	// Update ymin
+	swprintf(buffer, 128, L"Y-Min: %.5f", ymin);
+	SendMessage(hStatusBar, SB_SETTEXT, 1, (LPARAM)buffer);
 
-	swprintf(buffer, 256, L"Color Scheme: %s", colorScheme);
-	SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);
+	// Update xmax
+	swprintf(buffer, 128, L"X-Max: %.5f", xmax);
+	SendMessage(hStatusBar, SB_SETTEXT, 2, (LPARAM)buffer);
+
+	// Update ymax
+	swprintf(buffer, 128, L"Y-Maz: %.5f", ymax);
+	SendMessage(hStatusBar, SB_SETTEXT, 3, (LPARAM)buffer);
+
+	// Update Iterations
+	swprintf(buffer, 128, L"Iterations: %d", max_iter);
+	SendMessage(hStatusBar, SB_SETTEXT, 4, (LPARAM)buffer);
 }

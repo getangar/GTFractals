@@ -459,6 +459,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		else if (!isResizing && isJulia) {
 			StartJuliaThread(hwnd);			
 		}
+
+		UpdateStatusBarText();
+
 		break;
 	case WM_CREATE: // Window is being created
 		INITCOMMONCONTROLSEX icex;
