@@ -9,6 +9,7 @@
 #include "Julia.h"
 #include "utils.h"
 #include "export.h"
+#include "controls.h"
 
 
 // Global variables
@@ -202,6 +203,9 @@ void StartMandelbrotThread(HWND hwnd) {
 	else {
 		CloseHandle(threadHandle);
 	}
+
+	SendMessage(hProgressBar, PBM_SETPOS, 0, 0); // Resetta la progress bar
+
 }
 
 // Function to start the Julia thread
@@ -454,6 +458,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 		else if (!isResizing && isJulia) {
 			StartJuliaThread(hwnd);			
+		}
+		break;
+	case WM_CREATE: // Window is being created
+		INITCOMMONCONTROLSEX icex;
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_BAR_CLASSES; // Initialize common controls
+		InitCommonControlsEx(&icex);
+
+		CreateStatusBar(hwnd);
+		break;
+	case WM_SIZE:
+		// Resize the status bar
+		if (hStatusBar) {
+			SendMessage(hStatusBar, WM_SIZE, 0, 0);
 		}
 		break;
 	case WM_DESTROY: // Window is being destroyed

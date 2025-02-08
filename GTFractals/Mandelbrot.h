@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "colors.h"
 #include "global.h"
+#include "controls.h"
 
 
 void DrawMandelbrot(HWND); // Draw the Mandelbrot set
