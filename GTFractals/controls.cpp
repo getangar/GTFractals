@@ -3,6 +3,7 @@
 HWND hStatusBar = NULL;   // Definition of the variables
 HWND hProgressBar = NULL; // Definition of the variables
 
+// Function to create the status bar
 void CreateStatusBar(HWND hwnd) {
 	// Create the status bar
 	hStatusBar = CreateWindowEx(
@@ -47,12 +48,14 @@ void CreateStatusBar(HWND hwnd) {
 		return;
 	}
 
+	// Set the range of the progress bar
 	SendMessage(hProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
 	SendMessage(hProgressBar, PBM_SETPOS, 0, 0);
 
 	SendMessage(hwnd, WM_SIZE, 0, 0);
 }
 
+// Function to update the status bar
 void UpdateStatusBar() {
 	wchar_t buffer[256];
 
@@ -64,6 +67,7 @@ void UpdateStatusBar() {
 	swprintf(buffer, 256, L"xmax: %.5f, ymax: %.5f", xmax, ymax);
 	SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);
 
+	// Display the current value of max_iter
 	swprintf(buffer, 256, L"Iterations: %d", max_iter);
 	SendMessage(hStatusBar, SB_SETTEXT, 0, (LPARAM)buffer);	
 }
