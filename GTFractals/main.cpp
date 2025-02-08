@@ -9,6 +9,7 @@
 #include "Julia.h"
 #include "utils.h"
 #include "export.h"
+#include "controls.h"
 
 
 // Global variables
@@ -455,6 +456,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		else if (!isResizing && isJulia) {
 			StartJuliaThread(hwnd);			
 		}
+		break;
+	case WM_CREATE: // Window is being created
+		CreateStatusBar(hwnd);
 		break;
 	case WM_DESTROY: // Window is being destroyed
 		PostQuitMessage(0);
