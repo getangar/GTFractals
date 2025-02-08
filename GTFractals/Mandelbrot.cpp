@@ -14,14 +14,15 @@ void DrawMandelbrot(HWND hwnd) {
 	GetWindowRect(hProgressBar, &rcProgress);
 	int progressHeight = rcProgress.bottom - rcProgress.top;
 
-	int height = rect.bottom - progressHeight;
+	int height = rect.bottom - progressHeight - 3;
+	int progress = 0;
 
 	for (int py = 0; py < height; ++py) {
 		double y0 = ymin + (ymax - ymin) * py / height;
 		for (int px = 0; px < width; ++px) {
 
 			if (py % 10 == 0) {
-				int progress = (py * 100) / height;
+				progress = (py * 100) / height;
 				SendMessage(hProgressBar, PBM_SETPOS, progress, 0);
 			}
 
@@ -57,15 +58,12 @@ void DrawMandelbrot(HWND hwnd) {
 			
 		}
 
-		SendMessage(hProgressBar, PBM_SETPOS, 100, 0);
+		SendMessage(hProgressBar, PBM_SETPOS, progress, 0);
 	}
 
 	// Forza il ridisegno della status bar e della progress bar
-	SendMessage(hStatusBar, WM_SIZE, 0, 0);
-	InvalidateRect(hStatusBar, NULL, TRUE);
-	InvalidateRect(hProgressBar, NULL, TRUE);
-	UpdateWindow(hStatusBar);
-	UpdateWindow(hProgressBar);
+	SendMessage(hProgressBar, PBM_SETPOS, 0, 0);
+	UpdateWindow(hProgressBar); // Aggiorna solo la progress bar
 
 	EndPaint(hwnd, &ps);
 }

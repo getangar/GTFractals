@@ -11,6 +11,7 @@
 
 extern HWND hStatusBar;		// Handle to the status bar
 extern HWND hProgressBar;	// Handle to the progress bar
+void UpdateStatusBarText();
 
 // Function to create the status bar
 void CreateStatusBar(HWND);
