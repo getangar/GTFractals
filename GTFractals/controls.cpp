@@ -88,7 +88,7 @@ void UpdateStatusBarText() {
 	SendMessage(hStatusBar, SB_SETTEXT, 2, (LPARAM)buffer);
 
 	// Update ymax
-	swprintf(buffer, 128, L"Y-Maz: %.5f", ymax);
+	swprintf(buffer, 128, L"Y-Max: %.5f", ymax);
 	SendMessage(hStatusBar, SB_SETTEXT, 3, (LPARAM)buffer);
 
 	// Update Iterations
