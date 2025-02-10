@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "colors.h"
 #include "global.h"
+#include "controls.h"
 
 void DrawJulia(HWND); // Draw the Julia set
 

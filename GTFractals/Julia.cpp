@@ -8,7 +8,19 @@ void DrawJulia(HWND hwnd) {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	int width = rect.right;
-	int height = rect.bottom;
+
+	// Get the height of the toolbar
+	RECT rcToolbar;
+	GetWindowRect(hToolBar, &rcToolbar);
+	int toolbarHeight = rcToolbar.bottom - rcToolbar.top;
+
+	// Get the height of the status bar
+	RECT rcStatus;
+	GetWindowRect(hStatusBar, &rcStatus);
+	int statusBarHeight = rcStatus.bottom - rcStatus.top;
+
+	// Calculate the height of the available area
+	int height = rect.bottom - toolbarHeight - statusBarHeight;
 
 	isJulia = true;
 
@@ -44,7 +56,7 @@ void DrawJulia(HWND hwnd) {
 				break;
 			}
 			
-			SetPixel(hdc, px_screen, py_screen, color);
+			SetPixel(hdc, px_screen, py_screen + toolbarHeight, color);			
 		}
 	}
 
