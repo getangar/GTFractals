@@ -469,13 +469,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		icex.dwICC = ICC_BAR_CLASSES; // Initialize common controls
 		InitCommonControlsEx(&icex);
 
-		CreateStatusBar(hwnd);
+		CreateToolBar(hwnd);	// Create the toolbar
+		CreateStatusBar(hwnd);	// Create the status bar
 		break;
 	case WM_SIZE:
 		// Resize the status bar
 		if (hStatusBar) {
 			SendMessage(hStatusBar, WM_SIZE, 0, 0);
 		}
+		if (hToolBar) {
+			SendMessage(hToolBar, WM_SIZE, 0, 0); // Resize the toolbar
+		}
+		
+
 		break;
 	case WM_DESTROY: // Window is being destroyed
 		PostQuitMessage(0);
