@@ -61,9 +61,9 @@ void DrawMandelbrot(HWND hwnd) {
 		SendMessage(hProgressBar, PBM_SETPOS, progress, 0);
 	}
 
-	// Forza il ridisegno della status bar e della progress bar
+	// Reset the progress bar
 	SendMessage(hProgressBar, PBM_SETPOS, 0, 0);
-	UpdateWindow(hProgressBar); // Aggiorna solo la progress bar
+	UpdateWindow(hProgressBar); // 
 
 	EndPaint(hwnd, &ps);
 }
