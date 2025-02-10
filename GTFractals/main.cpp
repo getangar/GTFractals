@@ -257,20 +257,34 @@ void UpdateFractal(HWND hwnd) {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	int width = rect.right;
-	int height = rect.bottom;
+
+	// Get the height of the toolbar
+	RECT rcToolbar;
+	GetWindowRect(hToolBar, &rcToolbar);
+	int toolbarHeight = rcToolbar.bottom - rcToolbar.top;
+
+	// Get the height of the status bar
+	RECT rcStatus;
+	GetWindowRect(hStatusBar, &rcStatus);
+	int statusBarHeight = rcStatus.bottom - rcStatus.top;
+
+	int height = rect.bottom - toolbarHeight - statusBarHeight;
 
 	// Convert screen coordinates to complex plane coordinates
 	double newXmin = xmin + (xmax - xmin) * selectionRect.left / width;
 	double newXmax = xmin + (xmax - xmin) * selectionRect.right / width;
-	double newYmin = ymin + (ymax - ymin) * selectionRect.top / height;
-	double newYmax = ymin + (ymax - ymin) * selectionRect.bottom / height;
+	double newYmin = ymin + (ymax - ymin) * (selectionRect.top - toolbarHeight) / height;
+	double newYmax = ymin + (ymax - ymin) * (selectionRect.bottom - toolbarHeight) / height;
 
 	xmin = newXmin;
 	xmax = newXmax;
 	ymin = newYmin;
 	ymax = newYmax;
 
-	InvalidateRect(hwnd, NULL, TRUE); // Force redraw
+	InvalidateRect(hwnd, NULL, TRUE);
+
+	// Update status bar
+	UpdateStatusBarText();
 }
 
 // Function to reset the Mandelbrot set

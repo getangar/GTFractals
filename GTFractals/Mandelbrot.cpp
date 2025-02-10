@@ -9,12 +9,19 @@ void DrawMandelbrot(HWND hwnd) {
 	GetClientRect(hwnd, &rect);
 	int width = rect.right;
 
+	// Get the height of the toolbar
+	RECT rcToolbar;
+	GetWindowRect(hToolBar, &rcToolbar);
+	int toolbarHeight = rcToolbar.bottom - rcToolbar.top;
 
-	RECT rcProgress;
-	GetWindowRect(hProgressBar, &rcProgress);
-	int progressHeight = rcProgress.bottom - rcProgress.top;
+	// Get the height of the status bar
+	RECT rcStatus;
+	GetWindowRect(hStatusBar, &rcStatus);
+	int statusBarHeight = rcStatus.bottom - rcStatus.top;
 
-	int height = rect.bottom - progressHeight - 3;
+	// Calculate the height of the available area
+	int height = rect.bottom - toolbarHeight - statusBarHeight;
+
 	int progress = 0;
 
 	for (int py = 0; py < height; ++py) {
@@ -54,16 +61,11 @@ void DrawMandelbrot(HWND hwnd) {
 				break;
 			}
 
-			SetPixel(hdc, px, py, color);
-			
+			// Draw below the toolbar and above the status bar
+			SetPixel(hdc, px, py + toolbarHeight, color);
 		}
-
-		SendMessage(hProgressBar, PBM_SETPOS, progress, 0);
 	}
 
-	// Reset the progress bar
-	SendMessage(hProgressBar, PBM_SETPOS, 0, 0);
-	UpdateWindow(hProgressBar); // 
-
+	SendMessage(hProgressBar, PBM_SETPOS, 100, 0);
 	EndPaint(hwnd, &ps);
 }
