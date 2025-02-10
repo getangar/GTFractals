@@ -257,7 +257,7 @@ void UpdateFractal(HWND hwnd) {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	int width = rect.right;
-	int height = rect.bottom;
+	int height = rect.bottom - 22; // Adjust for status bar height
 
 	// Convert screen coordinates to complex plane coordinates
 	double newXmin = xmin + (xmax - xmin) * selectionRect.left / width;
