@@ -42,9 +42,21 @@ void DrawSelectionRect(HWND);	// Draw the selection rectangle
 DWORD WINAPI MandelbrotThread(LPVOID);	// Thread function for the Mandelbrot set
 DWORD WINAPI JuliaThread(LPVOID);		// Thread function for the Julia set
 
+// Function prototypes for the thread management
+void StartMandelbrotThread(HWND);
+void StartJuliaThread(HWND);
+
+// Function prototypes for the fractal drawing
+void ResetMandelbrot(HWND);
+
+// Function prototypes for the file handling
+bool ShowSaveFileDialog(HWND, WCHAR*, DWORD);
+
+// Function prototypes for resize the window
+bool ResizeWindow(LPARAM, WPARAM);
+
 // Function prototypes for messages handling
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-
 
 // Entry point
 int WINAPI WinMain(
@@ -317,6 +329,46 @@ bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 	return GetSaveFileName(&ofn);
 }
 
+// Function to resize the window
+bool ResizeWindow(LPARAM lParam, WPARAM wParam) {
+	RECT* rect = (RECT*)lParam;
+
+	// Define the correct aspect ratio (width / height)
+	double aspectRatio = (xmax - xmin) / (ymax - ymin);
+
+	// Get the current width and height of the resizing window
+	int width = rect->right - rect->left;
+	int height = rect->bottom - rect->top;
+
+	// Adjust the window size while maintaining the aspect ratio
+	switch (wParam) {
+	case WMSZ_LEFT:
+	case WMSZ_RIGHT:
+		// Adjust height to maintain aspect ratio based on width
+		rect->bottom = rect->top + (LONG)(width / aspectRatio);
+		break;
+	case WMSZ_TOP:
+	case WMSZ_BOTTOM:
+		// Adjust width to maintain aspect ratio based on height
+		rect->right = rect->left + (LONG)(height * aspectRatio);
+		break;
+	case WMSZ_TOPLEFT:
+	case WMSZ_TOPRIGHT:
+	case WMSZ_BOTTOMLEFT:
+	case WMSZ_BOTTOMRIGHT:
+		// Adjust both width and height while maintaining the aspect ratio
+		if ((double)width / height > aspectRatio) {
+			rect->right = rect->left + (LONG)(height * aspectRatio);
+		}
+		else {
+			rect->bottom = rect->top + (LONG)(width / aspectRatio);
+		}
+		break;
+	}
+
+	return TRUE; // Notify that we modified the window size
+}
+
 // Message processing function
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
@@ -499,6 +551,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		break;
 	case WM_DESTROY: // Window is being destroyed
 		PostQuitMessage(0);
+		break;
+	case WM_SIZING:
+		ResizeWindow(lParam, wParam);
 		break;
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);

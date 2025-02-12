@@ -66,6 +66,6 @@ void DrawMandelbrot(HWND hwnd) {
 		}
 	}
 
-	SendMessage(hProgressBar, PBM_SETPOS, 100, 0);
+	SendMessage(hProgressBar, PBM_SETPOS, 0, 0);
 	EndPaint(hwnd, &ps);
 }
