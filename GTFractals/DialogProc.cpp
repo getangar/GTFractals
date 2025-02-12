@@ -1,3 +1,10 @@
+#pragma comment(lib, "Version.lib")
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
+#include <VersionHelpers.h>
+
+
 #include "dialog.h"
 
 // Callback for the dialog
@@ -106,7 +113,36 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 BOOL CALLBACK AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
 	case WM_INITDIALOG:
-		return TRUE;
+	{
+		// Get version information
+		wchar_t versionString[50] = L"";
+		DWORD verHandle = 0;
+		UINT size = 0;
+		LPBYTE lpBuffer = NULL;
+		DWORD verSize = GetFileVersionInfoSize(L"GTFractals.exe", &verHandle);
+
+		if (verSize > 0) {
+			LPVOID verData = malloc(verSize);
+			if (GetFileVersionInfo(L"GTFractals.exe", verHandle, verSize, verData)) {
+				if (VerQueryValue(verData, L"\\", (LPVOID*)&lpBuffer, &size) && size) {
+					VS_FIXEDFILEINFO* verInfo = (VS_FIXEDFILEINFO*)lpBuffer;
+					if (verInfo->dwSignature == 0xfeef04bd) {
+						swprintf(versionString, 50, L"GTFractals v%d.%d.%d.%d",
+							(verInfo->dwFileVersionMS >> 16) & 0xffff,
+							(verInfo->dwFileVersionMS >> 0) & 0xffff,
+							(verInfo->dwFileVersionLS >> 16) & 0xffff,
+							(verInfo->dwFileVersionLS >> 0) & 0xffff);
+					}
+				}
+			}
+			free(verData);
+		}
+
+		// Update the title in the About dialog
+		SetDlgItemText(hDlg, IDC_STATIC_TITLE, versionString);
+	}
+	return TRUE;
+
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
 			EndDialog(hDlg, LOWORD(wParam));
