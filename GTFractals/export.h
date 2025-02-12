@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include "global.h"
 
 // Function prototypes
 BOOL SaveBitmap(HWND, LPCWSTR);
