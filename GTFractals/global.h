@@ -9,5 +9,6 @@ extern double px, py;					// Global variables for Julia set parameters
 extern bool isJulia;					// Flag to indicate if Julia set is being displayed
 extern int selectedColorPattern;		// Global variable for selected color pattern
 extern HWND hToolBar;					// Handle to the toolbar
+extern HWND hStatusBar;					// Handle to the status bar
 
 #endif

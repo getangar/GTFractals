@@ -76,47 +76,71 @@ BOOL PrintFractal(HWND hwnd) {
 	PRINTDLG pd = { 0 };
 	pd.lStructSize = sizeof(PRINTDLG);
 	pd.hwndOwner = hwnd;
-	pd.Flags = PD_RETURNDC | PD_USEDEVMODECOPIESANDCOLLATE;
-	pd.nCopies = 1;
+	pd.Flags = PD_RETURNDC;
 
 	if (!PrintDlg(&pd)) {
-		return FALSE; // User cancelled the print dialog
+		MessageBox(hwnd, L"User canceled print.", L"Error", MB_ICONERROR); // User canceled print
+		return FALSE;
 	}
 
 	HDC hdcPrinter = pd.hDC;
 	if (!hdcPrinter) {
-		MessageBox(hwnd, L"Failed to initialize printer.", L"Print Error", MB_OK | MB_ICONERROR);
+		MessageBox(hwnd, L"Failed to get printer DC.", L"Error", MB_ICONERROR);		
 		return FALSE;
 	}
 
-	// Start the print job
 	DOCINFO di = { 0 };
 	di.cbSize = sizeof(DOCINFO);
 	di.lpszDocName = L"GTFractals Print";
 
 	if (StartDoc(hdcPrinter, &di) > 0) {
-		if (StartPage(hdcPrinter) > 0) {
-			HDC hdcScreen = GetDC(hwnd);
-			HDC hdcMem = CreateCompatibleDC(hdcScreen);
+		StartPage(hdcPrinter);
 
-			RECT rect;
-			GetClientRect(hwnd, &rect);
-			int width = rect.right;
-			int height = rect.bottom;
+		// Get the client area excluding the UI elements
+		RECT clientRect;
+		GetClientRect(hwnd, &clientRect);
 
-			HBITMAP hbmScreen = CreateCompatibleBitmap(hdcScreen, width, height);
-			SelectObject(hdcMem, hbmScreen);
+		// Adjust the height to exclude toolbar and status bar
+		int toolbarHeight = 0, statusBarHeight = 0;
 
-			BitBlt(hdcMem, 0, 0, width, height, hdcScreen, 0, 0, SRCCOPY);
-
-			// Stretch and print the fractal on paper
-			StretchBlt(hdcPrinter, 100, 100, width * 3, height * 3, hdcMem, 0, 0, width, height, SRCCOPY);
-
-			EndPage(hdcPrinter);
+		// Get the height of the toolbar
+		if (hToolBar) {
+			RECT rcTool;
+			GetWindowRect(hToolBar, &rcTool);
+			toolbarHeight = rcTool.bottom - rcTool.top;
 		}
+
+		// Get the height of the status bar
+		if (hStatusBar) {
+			RECT rcStatus;
+			GetWindowRect(hStatusBar, &rcStatus);
+			statusBarHeight = rcStatus.bottom - rcStatus.top;
+		}
+
+		int fractalWidth = clientRect.right;
+		int fractalHeight = clientRect.bottom - toolbarHeight - statusBarHeight;
+
+		// Create a compatible DC to copy only the fractal area
+		HDC hdcScreen = GetDC(hwnd);
+		HDC hdcMem = CreateCompatibleDC(hdcScreen);
+		HBITMAP hbmMem = CreateCompatibleBitmap(hdcScreen, fractalWidth, fractalHeight);
+		SelectObject(hdcMem, hbmMem);
+
+		// Copy only the fractal area (excluding UI)
+		BitBlt(hdcMem, 0, 0, fractalWidth, fractalHeight, hdcScreen, 0, toolbarHeight, SRCCOPY);
+
+		// Print the fractal bitmap
+		StretchBlt(hdcPrinter, 100, 100, 500, 500, hdcMem, 0, 0, fractalWidth, fractalHeight, SRCCOPY);
+
+		// Cleanup
+		DeleteObject(hbmMem);
+		DeleteDC(hdcMem);
+		ReleaseDC(hwnd, hdcScreen);
+
+		EndPage(hdcPrinter);
 		EndDoc(hdcPrinter);
 	}
 
-	DeleteDC(hdcPrinter);
+	DeleteDC(hdcPrinter);    
 	return TRUE;
 }
