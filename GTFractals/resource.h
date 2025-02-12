@@ -12,6 +12,8 @@
 #define IDC_PY 1007
 #define IDC_JULIA 1008
 #define IDC_COLOR_PATTERN 2001
+#define IDC_STATIC_TITLE 3006
+
 
 // Toolbar
 #define IDR_TOOLBAR 500
