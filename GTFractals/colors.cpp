@@ -84,6 +84,21 @@ COLORREF GetVintageColor(int iterations, int max_iter) {
         return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
     }
 
-    // Cycle through the 256-color VGA palette
-    return vga_palette[iterations % 256];
+    // Normalize the iteration value to fit the palette size
+    double t = (double)iterations / max_iter;
+
+    // Compute the two closest colors in the VGA palette
+    int colorIndex1 = (int)(t * 255);
+    int colorIndex2 = (colorIndex1 + 1) % 256;
+
+    // Get the two colors from the VGA palette
+    COLORREF color1 = vga_palette[colorIndex1];
+    COLORREF color2 = vga_palette[colorIndex2];
+
+    // Interpolate between the two colors
+    int r = (int)((1 - t) * GetRValue(color1) + t * GetRValue(color2));
+    int g = (int)((1 - t) * GetGValue(color1) + t * GetGValue(color2));
+    int b = (int)((1 - t) * GetBValue(color1) + t * GetBValue(color2));
+
+    return RGB(r, g, b);
 }
