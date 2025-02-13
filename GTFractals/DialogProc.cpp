@@ -50,7 +50,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		// Add items to the dropdown
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Modern");
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Dark Gradient");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Vintage");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Vintage - 256 Colors");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Vintage - 16 Milion Colors");
 
 		// Set default selection
 		SendMessage(hCombo, CB_SETCURSEL, 2, 0); // Selects "Vintage"

@@ -84,6 +84,55 @@ COLORREF GetVintageColor(int iterations, int max_iter) {
         return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
     }
 
-    // Cycle through the 256-color VGA palette
-    return vga_palette[iterations % 256];
+    // Normalize the iteration value to fit the palette size
+    double t = (double)iterations / max_iter;
+
+    // Compute the two closest colors in the VGA palette
+    int colorIndex1 = (int)(t * 255);
+    int colorIndex2 = (colorIndex1 + 1) % 256;
+
+    // Get the two colors from the VGA palette
+    COLORREF color1 = vga_palette[colorIndex1];
+    COLORREF color2 = vga_palette[colorIndex2];
+
+    // Interpolate between the two colors
+    int r = (int)((1 - t) * GetRValue(color1) + t * GetRValue(color2));
+    int g = (int)((1 - t) * GetGValue(color1) + t * GetGValue(color2));
+    int b = (int)((1 - t) * GetBValue(color1) + t * GetBValue(color2));
+
+    return RGB(r, g, b);
+}
+
+// Function to generate a smooth VGA gradient using 16 million colors
+COLORREF GetSmoothVGAColor(int iterations, int max_iter) {
+    if (iterations == max_iter) {
+        return RGB(0, 0, 0); // Black for points inside the Mandelbrot set
+    }
+
+    // Define the number of key colors in the VGA palette (first 64 colors for smooth transition)
+    const int numVGAColors = 64; // Use the first 64 colors to create smooth gradients
+    double scale = (double)iterations / max_iter; // Normalize iterations between 0 and 1
+    int index = (int)(scale * (numVGAColors - 1)); // Map to VGA palette range
+
+    // Ensure index is within bounds
+    if (index < 0) index = 0;
+    if (index >= numVGAColors - 1) index = numVGAColors - 2;
+
+    // Perform linear interpolation between two adjacent colors in the VGA palette
+    COLORREF color1 = vga_palette[index];
+    COLORREF color2 = vga_palette[index + 1];
+
+    // Extract RGB components
+    int r1 = GetRValue(color1), g1 = GetGValue(color1), b1 = GetBValue(color1);
+    int r2 = GetRValue(color2), g2 = GetGValue(color2), b2 = GetBValue(color2);
+
+    // Compute interpolation factor
+    double t = (scale * (numVGAColors - 1)) - index;
+
+    // Interpolate RGB values
+    int r = (int)((1 - t) * r1 + t * r2);
+    int g = (int)((1 - t) * g1 + t * g2);
+    int b = (int)((1 - t) * b1 + t * b2);
+
+    return RGB(r, g, b);
 }
