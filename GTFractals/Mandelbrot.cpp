@@ -56,6 +56,9 @@ void DrawMandelbrot(HWND hwnd) {
 			case 2:
 				color = GetVintageColor(iteration, max_iter);
 				break;
+			case 3:
+				color = GetSmoothVGAColor(iteration, max_iter);
+				break;
 			default:
 				color = GetModernColor(iteration, max_iter);
 				break;
