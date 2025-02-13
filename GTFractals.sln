@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTFractals", "GTFractals\GTFractals.vcxproj", "{1427FA85-928D-47B6-A0F2-305E3654B51E}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "GTFractals_Setup", "GTFractals_Setup\GTFractals_Setup.vdproj", "{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -33,6 +35,14 @@ Global
 		{1427FA85-928D-47B6-A0F2-305E3654B51E}.Release|x64.Build.0 = Release|x64
 		{1427FA85-928D-47B6-A0F2-305E3654B51E}.Release|x86.ActiveCfg = Release|Win32
 		{1427FA85-928D-47B6-A0F2-305E3654B51E}.Release|x86.Build.0 = Release|Win32
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Debug|ARM.ActiveCfg = Debug
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Debug|ARM64.ActiveCfg = Debug
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Debug|x64.ActiveCfg = Debug
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Debug|x86.ActiveCfg = Debug
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Release|ARM.ActiveCfg = Release
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Release|ARM64.ActiveCfg = Release
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Release|x64.ActiveCfg = Release
+		{6A37CB1A-7BE7-B58D-EB82-429F3F4E4D60}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
