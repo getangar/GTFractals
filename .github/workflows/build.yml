@@ -3,8 +3,8 @@ name: MSBuild - Multi-Arch
 on:
   push:
     branches:
-      - main  # Esegue la build solo quando il codice è accettato in main
-  workflow_dispatch:  # Permette l'esecuzione manuale
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -94,5 +94,24 @@ jobs:
         body: "Automated release for GTFractals"
         draft: false
         prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Fetch Release Notes
+      id: release_notes
+      run: |
+        CHANGES=$(gh api repos/${{ github.repository }}/releases/latest --jq '.body')
+        echo "notes=$CHANGES" >> $GITHUB_ENV
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+    - name: Create GitHub Discussion
+      run: |
+        curl -X POST https://api.github.com/graphql \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d @- <<EOF
+        {
+          "query": "mutation { createDiscussion(input: {repositoryId: \"${{ secrets.REPO_ID }}\", categoryId: \"${{ secrets.DISCUSSION_CATEGORY_ID }}\", title: \"Release ${{ env.TAG_NAME }}\", body: \"${{ env.notes }}\"}) { discussion { url } } }"
+        }
+        EOF
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
