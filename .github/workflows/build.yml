@@ -2,15 +2,11 @@ name: MSBuild - Multi-Arch
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main  # La action si esegue solo su push al branch main
   pull_request:
-    branches: [ "main" ]
-
-env:
-  BUILD_CONFIGURATION: Release
-
-permissions:
-  contents: read
+    branches:
+      - main  # Esegue la build su PR aperte per testare prima del merge
 
 jobs:
   build:
@@ -20,15 +16,14 @@ jobs:
         platform: [x86, x64, ARM, ARM64]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Restore NuGet packages
-        run: nuget restore GTFractals.sln
+    - name: Restore NuGet packages
+      run: nuget restore GTFractals.sln
 
-      - name: Build GTFractals for ${{ matrix.platform }}
-        run: |
-          msbuild GTFractals.sln /m /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }} /t:GTFractals
+    - name: Build Solution
+      run: msbuild GTFractals.sln /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /t:GTFractals
