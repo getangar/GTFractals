@@ -3,7 +3,7 @@ name: MSBuild - Multi-Arch
 on:
   push:
     branches:
-      - main  # Esegui la build solo quando il codice è accettato su main
+      - main  # Run build only when code is accepted to main
 
 jobs:
   build:
