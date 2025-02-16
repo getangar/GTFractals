@@ -100,12 +100,18 @@ jobs:
     - name: Fetch Release Notes
       id: release_notes
       run: |
-        CHANGES=$(gh api repos/${{ github.repository }}/releases/latest --jq '.body' | sed 's/`//g' | sed 's/^## //' | tr -d '\r')
-        echo "notes<<EOF" >> $GITHUB_ENV
-        echo "$CHANGES" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
+        CHANGES=$(gh api repos/${{ github.repository }}/releases/latest --jq '.body')
+          
+        if [[ -z "$CHANGES" ]]; then
+          echo "CHANGES=Automated Release Notes" >> $GITHUB_ENV
+        else
+          echo "CHANGES<<EOF" >> $GITHUB_ENV
+          echo "$CHANGES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
 
     - name: Install GitHub CLI
       run: sudo apt update && sudo apt install -y gh
