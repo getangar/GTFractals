@@ -68,15 +68,16 @@ jobs:
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
         echo "tag=$TAG_NAME" >> $GITHUB_ENV
       shell: bash
-
+          
     - name: Create GitHub Tag
       run: |
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
         git tag $TAG_NAME
-        git push origin $TAG_NAME
+        git push https://x-access-token:${{ secrets.PAT }}@github.com/getangar/GTFractals.git $TAG_NAME
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PAT: ${{ secrets.PAT }}
+
 
     - name: Download All Artifacts
       uses: actions/download-artifact@v4
