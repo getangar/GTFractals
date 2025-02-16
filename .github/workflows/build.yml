@@ -3,8 +3,8 @@ name: MSBuild - Multi-Arch
 on:
   push:
     branches:
-      - main 
-  workflow_dispatch:
+      - main  # Esegue la build solo quando il codice è accettato in main
+  workflow_dispatch:  # Permette l'esecuzione manuale
 
 jobs:
   build:
@@ -54,10 +54,30 @@ jobs:
         path: artifacts/GTFractals_${{ matrix.platform }}.exe
         if-no-files-found: error
 
-  release:
+  tag_and_release:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Generate Tag
+      id: tag
+      run: |
+        TAG_NAME=v0.1.${{ github.run_number }}
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+        echo "tag=$TAG_NAME" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Create GitHub Tag
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git tag $TAG_NAME
+        git push origin $TAG_NAME
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Download All Artifacts
       uses: actions/download-artifact@v4
       with:
@@ -66,6 +86,11 @@ jobs:
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ env.TAG_NAME }}
+        name: Release ${{ env.TAG_NAME }}
         files: artifacts/**/*
+        body: "Automated release for GTFractals"
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
