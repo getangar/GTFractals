@@ -127,23 +127,14 @@ jobs:
         echo "DISCUSSION_ID=$DISCUSSION_ID" >> $GITHUB_ENV
       
     - name: Create GitHub Discussion
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         curl -X POST https://api.github.com/graphql \
-          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Authorization: Bearer $GH_TOKEN" \
           -H "Content-Type: application/json" \
           -d '{
-            "query": "mutation($repoId: ID!, $title: String!, $body: String!, $categoryId: ID!) {
-              createDiscussion(input: {repositoryId: $repoId, title: $title, body: $body, categoryId: $categoryId}) {
-                discussion {
-                  url
-                }
-              }
-            }",
-            "variables": {
-              "repoId": "'"${{ github.repository_id }}"'",
-              "title": "Release '"${{ env.TAG_NAME }}"'",
-              "body": "'"${{ env.CHANGES }}"'",
-              "categoryId": "'"${{ env.DISCUSSION_ID }}"'"
-            }
+            "query": "mutation { createDiscussion(input: {repositoryId: \"REPOSITORY_ID\", categoryId: \"'"$DISCUSSION_ID"'\", title: \"Release '"$TAG_NAME"'\", body: \"Automated Release Notes:\\n\\n'"$CHANGES"'\"}) { discussion { url } } }"
           }'
+      
       
