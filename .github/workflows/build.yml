@@ -107,42 +107,27 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Get Discussion Category ID
-      id: get_discussion_id
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Assegna il token di autenticazione
+    - name: Install GitHub CLI
+      run: sudo apt update && sudo apt install -y gh
+      
+    - name: Set GitHub Token
+      run: echo "GH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+      
+    - name: Get Repository ID
       run: |
-        DISCUSSION_ID=$(gh api graphql -f query='
-          query {
-            repository(owner: "getangar", name: "GTFractals") {
-              discussionCategories(first: 10) {
-                nodes {
-                  id
-                  name
-                }
-              }
-            }
+        REPOSITORY_ID=$(gh api graphql -H "Authorization: bearer $GH_TOKEN" -f query='
+        query {
+          repository(owner: "getangar", name: "GTFractals") {
+            id
           }
-        ' --jq '.data.repository.discussionCategories.nodes[] | select(.name=="Announcements") | .id')
-        echo "DISCUSSION_ID=$DISCUSSION_ID" >> $GITHUB_ENV
+        }' --jq '.data.repository.id')
       
-        - name: Get Repository ID
-        run: |
-          REPOSITORY_ID=$(gh api graphql -f query='
-          query {
-            repository(owner: "getangar", name: "GTFractals") {
-              id
-            }
-          }' --jq '.data.repository.id')
-      
-          echo "Repository ID: $REPOSITORY_ID"
-          echo "REPOSITORY_ID=$REPOSITORY_ID" >> $GITHUB_ENV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        echo "Repository ID: $REPOSITORY_ID"
+        echo "REPOSITORY_ID=$REPOSITORY_ID" >> $GITHUB_ENV
       
     - name: Get Discussion Category ID
       run: |
-        DISCUSSION_ID=$(gh api graphql -f query='
+        DISCUSSION_ID=$(gh api graphql -H "Authorization: bearer $GH_TOKEN" -f query='
         query {
           repository(owner: "getangar", name: "GTFractals") {
             discussionCategories(first: 10) {
@@ -153,11 +138,9 @@ jobs:
             }
           }
         }' --jq '.data.repository.discussionCategories.nodes[] | select(.name=="Announcements") | .id')
-    
+      
         echo "Discussion Category ID: $DISCUSSION_ID"
         echo "DISCUSSION_ID=$DISCUSSION_ID" >> $GITHUB_ENV
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Create GitHub Discussion
       run: |
@@ -179,9 +162,6 @@ jobs:
         echo "Payload JSON: $PAYLOAD"
       
         curl -X POST https://api.github.com/graphql \
-          -H "Authorization: bearer $GITHUB_TOKEN" \
+          -H "Authorization: bearer $GH_TOKEN" \
           -H "Content-Type: application/json" \
           -d "$PAYLOAD"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
