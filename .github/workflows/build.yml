@@ -96,6 +96,7 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Fetch Release Notes
       id: release_notes
       run: |
@@ -108,6 +109,8 @@ jobs:
 
     - name: Get Discussion Category ID
       id: get_discussion_id
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Assegna il token di autenticazione
       run: |
         DISCUSSION_ID=$(gh api graphql -f query='
           query {
@@ -115,14 +118,14 @@ jobs:
               discussionCategories(first: 10) {
                 nodes {
                   id
-                  name                  
+                  name
                 }
               }
             }
           }
         ' --jq '.data.repository.discussionCategories.nodes[] | select(.name=="Announcements") | .id')
         echo "DISCUSSION_ID=$DISCUSSION_ID" >> $GITHUB_ENV
-
+      
     - name: Create GitHub Discussion
       run: |
         curl -X POST https://api.github.com/graphql \
