@@ -22,5 +22,8 @@ jobs:
     - name: Restore NuGet packages
       run: nuget restore GTFractals.sln
 
+    - name: Set Environment Variable for Platform
+      run: echo "PLATFORM=${{ matrix.platform }}" >> $GITHUB_ENV
+
     - name: Build Solution
-      run: msbuild GTFractals.sln /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /t:GTFractals
+      run: msbuild GTFractals.sln /m /p:Configuration=Release /p:Platform=${{ env.PLATFORM }} /t:GTFractals
