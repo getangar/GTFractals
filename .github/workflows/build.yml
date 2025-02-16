@@ -106,15 +106,41 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Get Discussion Category ID
+      id: get_discussion_id
+      run: |
+        DISCUSSION_ID=$(gh api graphql -f query='
+          query {
+            repository(owner: "getangar", name: "GTFractals") {
+              discussionCategories(first: 10) {
+                nodes {
+                  id
+                  name                  
+                }
+              }
+            }
+          }
+        ' --jq '.data.repository.discussionCategories.nodes[] | select(.name=="Announcements") | .id')
+        echo "DISCUSSION_ID=$DISCUSSION_ID" >> $GITHUB_ENV
+
     - name: Create GitHub Discussion
       run: |
         curl -X POST https://api.github.com/graphql \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d @- <<EOF
-        {
-          "query": "mutation { createDiscussion(input: {repositoryId: \"${{ secrets.REPO_ID }}\", categoryId: \"${{ secrets.DISCUSSION_CATEGORY_ID }}\", title: \"Release ${{ env.TAG_NAME }}\", body: \"${{ env.notes }}\"}) { discussion { url } } }"
-        }
-        EOF
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          -d '{
+            "query": "mutation($repoId: ID!, $title: String!, $body: String!, $categoryId: ID!) {
+              createDiscussion(input: {repositoryId: $repoId, title: $title, body: $body, categoryId: $categoryId}) {
+                discussion {
+                  url
+                }
+              }
+            }",
+            "variables": {
+              "repoId": "'"${{ github.repository_id }}"'",
+              "title": "Release '"${{ env.TAG_NAME }}"'",
+              "body": "'"${{ env.CHANGES }}"'",
+              "categoryId": "'"${{ env.DISCUSSION_ID }}"'"
+            }
+          }'
+      
