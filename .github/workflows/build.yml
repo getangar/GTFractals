@@ -2,42 +2,28 @@ name: MSBuild - Multi-Arch
 
 on:
   push:
-    branches: 
-      - main
+    branches:
+      - main  # La action si esegue solo su push al branch main
   pull_request:
-    branches: 
-      - main
-  workflow_run:
-    workflows: ["MSBuild - Multi-Arch"]
-    branches: [develop]
-    types:
-      - completed
-
-env:
-  BUILD_CONFIGURATION: Release
-  WINDOWS_SDK_VERSION: 10.0.26100.0
-
-permissions:
-  contents: read
+    branches:
+      - main  # Esegue la build su PR aperte per testare prima del merge
 
 jobs:
   build:
-    if: github.event_name != 'push' || github.event.pusher.name != 'github-actions[bot]'
     runs-on: windows-latest
-
     strategy:
       matrix:
         platform: [x86, x64, ARM, ARM64]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.2
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
 
-      - name: Restore NuGet packages
-        run: nuget restore GTFractals.sln
+    - name: Restore NuGet packages
+      run: nuget restore GTFractals.sln
 
-      - name: Build GTFractals (${{ matrix.platform }})
-        run: msbuild GTFractals.sln /m /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }} /t:GTFractals
+    - name: Build Solution
+      run: msbuild GTFractals.sln /m /p:Configuration=Release /p:Platform=${{ matrix.platform }} /t:GTFractals
