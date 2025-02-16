@@ -17,7 +17,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        platform: [x86, x64, ARM, ARM64]  # Compila per tutte le architetture
+        platform: [x86, x64, ARM, ARM64]
 
     steps:
       - name: Checkout repository
@@ -31,4 +31,4 @@ jobs:
 
       - name: Build GTFractals for ${{ matrix.platform }}
         run: |
-          msbuild GTFractals.sln /m /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }}
+          msbuild GTFractals.sln /m /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }} /t:GTFractals
