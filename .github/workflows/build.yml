@@ -3,8 +3,8 @@ name: MSBuild - Multi-Arch
 on:
   push:
     branches:
-      - main  # Run build only when code is accepted to main
-  workflow_dispatch:  # Allow manual triggering
+      - main 
+  workflow_dispatch:
 
 jobs:
   build:
@@ -35,13 +35,14 @@ jobs:
       run: mkdir -p artifacts
       shell: pwsh
 
-    - name: Copy Executables
+    - name: Find and Copy Executables
       run: |
-        $exePath = "GTFractals\${{ matrix.platform }}\Release\GTFractals.exe"
-        if (Test-Path $exePath) {
+        $exePath = Get-ChildItem -Path D:\a\GTFractals\GTFractals\ -Filter "GTFractals.exe" -Recurse | Select-Object -ExpandProperty FullName
+        if ($exePath) {
           Copy-Item -Path $exePath -Destination "artifacts/GTFractals_${{ matrix.platform }}.exe"
+          Write-Host "Copied: $exePath"
         } else {
-          Write-Host "ERROR: File not found -> $exePath"
+          Write-Host "ERROR: GTFractals.exe not found!"
           exit 1
         }
       shell: pwsh
