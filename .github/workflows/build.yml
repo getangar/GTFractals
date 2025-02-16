@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main  # Run build only when code is accepted to main
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   build:
@@ -28,3 +29,77 @@ jobs:
 
     - name: Build Solution
       run: msbuild GTFractals.sln /m /p:Configuration=Release /p:Platform=${{ env.PLATFORM }} /t:GTFractals
+
+    - name: Copy Executable to Artifacts Folder
+      run: |
+        mkdir -p artifacts
+        copy GTFractals\Release\GTFractals.exe artifacts\GTFractals_${{ matrix.platform }}.exe
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: GTFractals-${{ matrix.platform }}
+        path: artifacts/GTFractals_${{ matrix.platform }}.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download all build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release-artifacts
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v0.1  # Sostituisci con la tua versione dinamicamente
+        release_name: "GTFractals v0.1"
+        draft: false
+        prerelease: false
+
+    - name: Upload Executables to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: release-artifacts/GTFractals-x86/GTFractals_x86.exe
+        asset_name: GTFractals_x86.exe
+        asset_content_type: application/octet-stream
+
+    - name: Upload Executables to Release (x64)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: release-artifacts/GTFractals-x64/GTFractals_x64.exe
+        asset_name: GTFractals_x64.exe
+        asset_content_type: application/octet-stream
+
+    - name: Upload Executables to Release (ARM)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: release-artifacts/GTFractals-ARM/GTFractals_ARM.exe
+        asset_name: GTFractals_ARM.exe
+        asset_content_type: application/octet-stream
+
+    - name: Upload Executables to Release (ARM64)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: release-artifacts/GTFractals-ARM64/GTFractals_ARM64.exe
+        asset_name: GTFractals_ARM64.exe
+        asset_content_type: application/octet-stream
