@@ -99,10 +99,13 @@ jobs:
     - name: Fetch Release Notes
       id: release_notes
       run: |
-        CHANGES=$(gh api repos/${{ github.repository }}/releases/latest --jq '.body')
-        echo "notes=$CHANGES" >> $GITHUB_ENV
+        CHANGES=$(gh api repos/${{ github.repository }}/releases/latest --jq '.body' | sed 's/`//g' | sed 's/^## //' | tr -d '\r')
+        echo "notes<<EOF" >> $GITHUB_ENV
+        echo "$CHANGES" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Create GitHub Discussion
       run: |
         curl -X POST https://api.github.com/graphql \
