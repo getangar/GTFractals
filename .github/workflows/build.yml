@@ -1,4 +1,4 @@
-name: Build GTFractals and Installer
+name: MSBuild - Multi-Arch
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
     branches: [ "main" ]
 
 env:
-  SOLUTION_FILE_PATH: GTFractals.sln
   BUILD_CONFIGURATION: Release
 
 permissions:
@@ -16,34 +15,20 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
-
     strategy:
       matrix:
-        platform: [x86, x64, ARM, ARM64]
+        platform: [x86, x64, ARM, ARM64]  # Compila per tutte le architetture
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+      - name: Restore NuGet packages
+        run: nuget restore GTFractals.sln
 
-    - name: Build GTFractals (${{matrix.platform}})
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{matrix.platform}} ${{env.SOLUTION_FILE_PATH}}
-
-    - name: Build Installer (${{matrix.platform}})
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{matrix.platform}} GTFractals_Setup/GTFractals_Setup.vdproj
-
-    - name: Upload Executable and Installer
-      uses: actions/upload-artifact@v4
-      with:
-        name: GTFractals-${{matrix.platform}}
-        path: |
-          GTFractals/bin/${{matrix.platform}}/${{env.BUILD_CONFIGURATION}}/*.exe
-          GTFractals_Setup/bin/${{matrix.platform}}/${{env.BUILD_CONFIGURATION}}/*.msi
+      - name: Build GTFractals for ${{ matrix.platform }}
+        run: |
+          msbuild GTFractals.sln /m /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.platform }}
