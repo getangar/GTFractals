@@ -378,7 +378,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			break;
 		}
-		else if (LOWORD(wParam) == 2) { // Reset
+		else if (LOWORD(wParam) == 2 || LOWORD(wParam) == 3001) { // Reset
 			ResetMandelbrot(hwnd);
 
 			break;
