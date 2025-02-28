@@ -332,6 +332,7 @@ bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 	return GetSaveFileName(&ofn);
 }
 
+// Function to show the Open File dialog
 bool ShowOpenFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 	OPENFILENAME ofn = { 0 };
 	ZeroMemory(&ofn, sizeof(ofn));
