@@ -389,7 +389,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		else if (LOWORD(wParam) == 102) {
 			break;
 		}
-		else if (LOWORD(wParam) == 103) {
+		else if (LOWORD(wParam) == 103 || LOWORD(wParam) == 3003) {
 			WCHAR filePath[MAX_PATH] = { 0 };
 
 			if (ShowSaveFileDialog(hwnd, filePath, MAX_PATH)) {
