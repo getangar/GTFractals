@@ -49,8 +49,11 @@ void StartJuliaThread(HWND);
 // Function prototypes for the fractal drawing
 void ResetMandelbrot(HWND);
 
-// Function prototypes for the file handling
+// Function prototypes for the save file handling
 bool ShowSaveFileDialog(HWND, WCHAR*, DWORD);
+
+// Function prototypes for the open file handling
+bool ShowOpenFileDialog(HWND, WCHAR*, DWORD);
 
 // Function prototypes for resize the window
 bool ResizeWindow(LPARAM, WPARAM);
@@ -329,6 +332,19 @@ bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
 	return GetSaveFileName(&ofn);
 }
 
+bool ShowOpenFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
+	OPENFILENAME ofn = { 0 };
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFilter = L"BMP Files\0*.bmp\0All Files\0*.*\0";
+	ofn.lpstrFile = filePath;
+	ofn.nMaxFile = filePathSize;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	ofn.lpstrDefExt = L"bmp";
+	return GetOpenFileName(&ofn);
+}
+
 // Function to resize the window
 bool ResizeWindow(LPARAM lParam, WPARAM wParam) {
 	RECT* rect = (RECT*)lParam;
@@ -373,7 +389,7 @@ bool ResizeWindow(LPARAM lParam, WPARAM wParam) {
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_COMMAND: // Handle menu commands
-		if (LOWORD(wParam) == 1) {
+		if (LOWORD(wParam) == 1) { // Exit
 			PostQuitMessage(0);
 
 			break;
@@ -383,7 +399,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			break;
 		}
-		else if (LOWORD(wParam) == 101) {
+		else if (LOWORD(wParam) == 101 || LOWORD(wParam) == 3002) {
+			WCHAR filePath[MAX_PATH] = { 0 };
+
+			if (ShowOpenFileDialog(hwnd, filePath, MAX_PATH)) {
+				if (!SaveBitmap(hwnd, filePath)) {
+					MessageBox(hwnd, L"Failed to open image.", L"Error", MB_OK | MB_ICONERROR);
+				}				
+			}
+
+			break;
 			break;
 		}
 		else if (LOWORD(wParam) == 102) {
