@@ -1,4 +1,4 @@
-# 🚀 Pull Request: [Titolo Descrittivo]
+# 🚀 Pull Request: [Descriptive Title]
 
 ## 📌 Description
 <!-- Provide a brief description of the changes. Why are they necessary? -->
