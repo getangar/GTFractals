@@ -400,7 +400,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			break;
 		}
-		else if (LOWORD(wParam) == 105) {
+		else if (LOWORD(wParam) == 105 || LOWORD(wParam) == 3004) {
 			if (!PrintFractal(hwnd)) {
 				MessageBox(hwnd, L"Failed to print.", L"Error", MB_OK | MB_ICONERROR);
 			}			
