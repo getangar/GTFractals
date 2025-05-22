@@ -50,10 +50,10 @@ void StartJuliaThread(HWND);
 void ResetMandelbrot(HWND);
 
 // Function prototypes for the save file handling
-bool ShowSaveFileDialog(HWND, WCHAR*, DWORD);
+bool ShowSaveFileDialog(HWND, char *, DWORD);
 
 // Function prototypes for the open file handling
-bool ShowOpenFileDialog(HWND, WCHAR*, DWORD);
+bool ShowOpenFileDialog(HWND, char *, DWORD);
 
 // Function prototypes for resize the window
 bool ResizeWindow(LPARAM, WPARAM);
@@ -63,12 +63,12 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 // Entry point
 int WINAPI WinMain(
-	_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPSTR lpCmdLine,
-	_In_ int nCmdShow
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	PSTR lpCmdLine,
+	int nCmdShow
 ) {
-	LPCWSTR CLASS_NAME = L"GTFractals";  // Window class name
+	static char CLASS_NAME[] = "GTFractals";  // Window class name
 
 	WNDCLASSEX wc = { 0 };
 	wc.cbSize = sizeof(WNDCLASSEX);
@@ -84,18 +84,18 @@ int WINAPI WinMain(
 
 	if (!RegisterClassEx(&wc)) {
 		DWORD error = GetLastError();
-		wchar_t errorMessage[256];
-		wsprintf(errorMessage, L"Window Registration Failed! Error Code: %d", error);
-		MessageBox(NULL, errorMessage, L"Error", MB_ICONEXCLAMATION | MB_OK);
+		char errorMessage[256];
+		wsprintf(errorMessage, "Window Registration Failed! Error Code: %d", error);
+		MessageBox(NULL, errorMessage, "Error", MB_ICONEXCLAMATION | MB_OK);
 		return 0;
 	}
 
-	HWND hwnd = CreateWindowEx(0, CLASS_NAME, L"GTFractals",
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 800, 800,
+	HWND hwnd = CreateWindowEx(0, CLASS_NAME, "GTFractals",
+		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 640,
 		NULL, NULL, hInstance, NULL);
 
 	if (!hwnd) {
-		MessageBox(NULL, L"Window Creation Failed!", L"Error!", MB_ICONEXCLAMATION | MB_OK);
+		MessageBox(NULL, "Window Creation Failed!", "Error!", MB_ICONEXCLAMATION | MB_OK);
 		return 0;
 	}
 
@@ -129,32 +129,32 @@ void AddMenus(HWND hwnd) {
 	HMENU hHelpMenu = CreateMenu();
 
 	// File Menu
-	AppendMenu(hFileMenu, MF_STRING, 101, L"Open");
-	AppendMenu(hFileMenu, MF_STRING, 102, L"Save");
-	AppendMenu(hFileMenu, MF_STRING, 103, L"Save as...");
+	AppendMenu(hFileMenu, MF_STRING, 101, "Open");
+	AppendMenu(hFileMenu, MF_STRING, 102, "Save");
+	AppendMenu(hFileMenu, MF_STRING, 103, "Save as...");
 	AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hFileMenu, MF_STRING, 104, L"Export image");
+	AppendMenu(hFileMenu, MF_STRING, 104, "Export image");
 	AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hFileMenu, MF_STRING, 105, L"Print");
+	AppendMenu(hFileMenu, MF_STRING, 105, "Print");
 	AppendMenu(hFileMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hFileMenu, MF_STRING, 1, L"Exit");
+	AppendMenu(hFileMenu, MF_STRING, 1, "Exit");
 
 	// Edit Menu
-	AppendMenu(hEditMenu, MF_STRING, 106, L"Settings");
+	AppendMenu(hEditMenu, MF_STRING, 106, "Settings");
 
 	// Draw Menu
-	AppendMenu(hDrawMenu, MF_STRING, 2, L"Reset Image");
+	AppendMenu(hDrawMenu, MF_STRING, 2, "Reset Image");
 
 	// Help Menu
-	AppendMenu(hHelpMenu, MF_STRING, 107, L"Help");
+	AppendMenu(hHelpMenu, MF_STRING, 107, "Help");
 	AppendMenu(hHelpMenu, MF_SEPARATOR, 0, NULL);
-	AppendMenu(hHelpMenu, MF_STRING, 3, L"About");
+	AppendMenu(hHelpMenu, MF_STRING, 3, "About");
 
 	// Add submenus to the main menu
-	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"File");
-	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEditMenu, L"Edit");
-	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hDrawMenu, L"Draw");
-	AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hHelpMenu, L"?");
+	AppendMenu(hMenu, MF_POPUP, (UINT)hFileMenu, "File");
+	AppendMenu(hMenu, MF_POPUP, (UINT)hEditMenu, "Edit");
+	AppendMenu(hMenu, MF_POPUP, (UINT)hDrawMenu, "Draw");
+	AppendMenu(hMenu, MF_POPUP, (UINT)hHelpMenu, "?");
 
 	SetMenu(hwnd, hMenu);
 }
@@ -203,15 +203,28 @@ void StartMandelbrotThread(HWND hwnd) {
 
 	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
 	if (params == NULL) {
-		MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
+		MessageBox(hwnd, "Memory allocation failed", "Error", MB_ICONERROR);
 		return;
 	}
 	params->hwnd = hwnd;
 
-	HANDLE threadHandle = CreateThread(NULL, 0, MandelbrotThread, params, 0, NULL);
+	DWORD id;
+	HANDLE threadHandle = CreateThread(
+							NULL, 
+							0, 
+							(LPTHREAD_START_ROUTINE)MandelbrotThread, 
+							params, 
+							0, 
+							&id);
 	if (threadHandle == NULL) {
+		DWORD err = GetLastError();
+		char buf[128];
+		sprintf(buf, "CreateThread failed with error: %lu", err);
+		MessageBox(hwnd, buf, "Error", MB_ICONERROR);
+
+
 		DebugPrint("Error creating Mandelbrot thread\n");
-		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+		MessageBox(hwnd, "Errore nella creazione del thread", "Errore", MB_ICONERROR);
 		free(params);
 		isThreadRunning = false;
 	}
@@ -220,7 +233,6 @@ void StartMandelbrotThread(HWND hwnd) {
 	}
 
 	SendMessage(hProgressBar, PBM_SETPOS, 0, 0); // Resetta la progress bar
-
 }
 
 // Function to start the Julia thread
@@ -234,7 +246,7 @@ void StartJuliaThread(HWND hwnd) {
 
 	FractalParams* params = (FractalParams*)malloc(sizeof(FractalParams));
 	if (params == NULL) {
-		MessageBox(hwnd, L"Memory allocation failed", L"Error", MB_ICONERROR);
+		MessageBox(hwnd, "Memory allocation failed", "Error", MB_ICONERROR);
 		return;
 	}
 	params->hwnd = hwnd;
@@ -242,7 +254,7 @@ void StartJuliaThread(HWND hwnd) {
 	HANDLE threadHandle = CreateThread(NULL, 0, JuliaThread, params, 0, NULL);
 	if (threadHandle == NULL) {
 		DebugPrint("Error creating Julia thread\n");
-		MessageBox(hwnd, L"Errore nella creazione del thread", L"Errore", MB_ICONERROR);
+		MessageBox(hwnd, "Errore while creating Julia thread", "Error", MB_ICONERROR);
 		free(params);
 		isThreadRunning = false;
 	}
@@ -317,32 +329,32 @@ void ResetMandelbrot(HWND hwnd) {
 }
 
 // Function to show the Save File dialog
-bool ShowSaveFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
+bool ShowSaveFileDialog(HWND hwnd, char * filePath, DWORD filePathSize) {
 	OPENFILENAME ofn = { 0 };
 	ZeroMemory(&ofn, sizeof(ofn));
 
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
-	ofn.lpstrFilter = L"BMP Files\0*.bmp\0All Files\0*.*\0";
-	ofn.lpstrFile = filePath;
+	ofn.lpstrFilter = "BMP Files\0*.bmp\0All Files\0*.*\0";
+	ofn.lpstrFile = (char*)filePath;
 	ofn.nMaxFile = filePathSize;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
-	ofn.lpstrDefExt = L"bmp";
+	ofn.lpstrDefExt = "bmp";
 
 	return GetSaveFileName(&ofn);
 }
 
 // Function to show the Open File dialog
-bool ShowOpenFileDialog(HWND hwnd, WCHAR* filePath, DWORD filePathSize) {
+bool ShowOpenFileDialog(HWND hwnd, char * filePath, DWORD filePathSize) {
 	OPENFILENAME ofn = { 0 };
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
-	ofn.lpstrFilter = L"BMP Files\0*.bmp\0All Files\0*.*\0";
+	ofn.lpstrFilter = "BMP Files\0*.bmp\0All Files\0*.*\0";
 	ofn.lpstrFile = filePath;
 	ofn.nMaxFile = filePathSize;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-	ofn.lpstrDefExt = L"bmp";
+	ofn.lpstrDefExt = "bmp";
 	return GetOpenFileName(&ofn);
 }
 
@@ -401,11 +413,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			break;
 		}
 		else if (LOWORD(wParam) == 101 || LOWORD(wParam) == 3002) {
-			WCHAR filePath[MAX_PATH] = { 0 };
+			char filePath[MAX_PATH];
 
 			if (ShowOpenFileDialog(hwnd, filePath, MAX_PATH)) {
 				if (!SaveBitmap(hwnd, filePath)) {
-					MessageBox(hwnd, L"Failed to open image.", L"Error", MB_OK | MB_ICONERROR);
+					MessageBox(hwnd, "Failed to open image.", "Error", MB_OK | MB_ICONERROR);
 				}				
 			}
 
@@ -416,11 +428,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			break;
 		}
 		else if (LOWORD(wParam) == 103 || LOWORD(wParam) == 3003) {
-			WCHAR filePath[MAX_PATH] = { 0 };
+			char filePath[MAX_PATH];
 
 			if (ShowSaveFileDialog(hwnd, filePath, MAX_PATH)) {
 				if (!SaveBitmap(hwnd, filePath)) {
-					MessageBox(hwnd, L"Failed to save image.", L"Error", MB_OK | MB_ICONERROR);
+					MessageBox(hwnd, "Failed to save image.", "Error", MB_OK | MB_ICONERROR);
 				}				
 			}
 
@@ -428,19 +440,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 		else if (LOWORD(wParam) == 105 || LOWORD(wParam) == 3004) {
 			if (!PrintFractal(hwnd)) {
-				MessageBox(hwnd, L"Failed to print.", L"Error", MB_OK | MB_ICONERROR);
-			}			
+				MessageBox(hwnd, "Failed to print.", "Error", MB_OK | MB_ICONERROR);
+			}
 			break;
 		}
 		else if (LOWORD(wParam) == 106) {
-			if (DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), hwnd, DialogProc, 0) == IDOK) {
+			if (DialogBoxParam(
+					GetModuleHandle(NULL), 
+					MAKEINTRESOURCE(IDD_DIALOG1), 
+					hwnd, 
+					(DLGPROC)DialogProc, 
+					0) == IDOK) {
 				InvalidateRect(hwnd, NULL, TRUE); // Force redraw
+			} else {
+				MessageBox(hwnd, "Failed to open settings.", "Error", MB_OK | MB_ICONERROR);
 			}
 
 			break;
 		}
 		else {
-			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUT_DIALOG), hwnd, (DLGPROC)AboutDialogProc);						
+			DialogBox(GetModuleHandle(NULL), 
+				MAKEINTRESOURCE(IDD_ABOUT_DIALOG), 
+				hwnd, 
+				(DLGPROC)AboutDialogProc);						
 		}
 		break;
 	case WM_ENTERSIZEMOVE: // The user is resizing the window
@@ -556,10 +578,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		break;
 	case WM_CREATE: // Window is being created
-		INITCOMMONCONTROLSEX icex;
-		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-		icex.dwICC = ICC_BAR_CLASSES; // Initialize common controls
-		InitCommonControlsEx(&icex);
+		InitCommonControls(); // For Windows 98 compatibility
 
 		CreateToolBar(hwnd);	// Create the toolbar
 		CreateStatusBar(hwnd);	// Create the status bar

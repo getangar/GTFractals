@@ -2,44 +2,42 @@
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
-#include <VersionHelpers.h>
-
 
 #include "dialog.h"
 
 // Callback for the dialog
-INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
 	case WM_INITDIALOG: {
-		WCHAR buffer[100];
+		char buffer[128];
 
 		// Set xmin
-		swprintf(buffer, 100, L"%lf", xmin);
-		SetDlgItemText(hDlg, IDC_XMIN, buffer);
+		sprintf(buffer, "%lf", xmin);		
+		SetDlgItemText(hDlg, IDC_XMIN, (char *)buffer);
 
 		// Set ymin
-		swprintf(buffer, 100, L"%lf", ymin);
-		SetDlgItemText(hDlg, IDC_YMIN, buffer);
+		sprintf(buffer, "%lf", ymin);
+		SetDlgItemText(hDlg, IDC_YMIN, (char *)buffer);
 
 		// Set xmax
-		swprintf(buffer, 100, L"%lf", xmax);
-		SetDlgItemText(hDlg, IDC_XMAX, buffer);
+		sprintf(buffer, "%lf", xmax);
+		SetDlgItemText(hDlg, IDC_XMAX, (char *)buffer);
 
 		// Set ymax
-		swprintf(buffer, 100, L"%lf", ymax);
-		SetDlgItemText(hDlg, IDC_YMAX, buffer);
+		sprintf(buffer, "%lf", ymax);
+		SetDlgItemText(hDlg, IDC_YMAX, (char *)buffer);
 
 		// Set max_iter
-		swprintf(buffer, 100, L"%d", max_iter);
-		SetDlgItemText(hDlg, IDC_ITER, buffer);
+		sprintf(buffer, "%d", max_iter);
+		SetDlgItemText(hDlg, IDC_ITER, (char *)buffer);
 
 		// Set px
-		swprintf(buffer, 100, L"%lf", px);
-		SetDlgItemText(hDlg, IDC_PX, buffer);
+		sprintf(buffer, "%lf", px);
+		SetDlgItemText(hDlg, IDC_PX, (char *)buffer);
 
 		// Set py
-		swprintf(buffer, 100, L"%lf", py);
-		SetDlgItemText(hDlg, IDC_PY, buffer);
+		sprintf(buffer, "%lf", py);
+		SetDlgItemText(hDlg, IDC_PY, (char *)buffer);
 
 		// Set Julia checkbox
 		CheckDlgButton(hDlg, IDC_JULIA, isJulia ? BST_CHECKED : BST_UNCHECKED);
@@ -48,10 +46,10 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		HWND hCombo = GetDlgItem(hDlg, IDC_COLOR_PATTERN);
 
 		// Add items to the dropdown
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Modern");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Dark Gradient");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Vintage - 256 Colors");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)L"Vintage - 16 Milion Colors");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Modern");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Dark Gradient");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Vintage - 256 Colors");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Vintage - 16 Milion Colors");
 
 		// Set default selection
 		SendMessage(hCombo, CB_SETCURSEL, 2, 0); // Selects "Vintage"
@@ -64,31 +62,31 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			WCHAR buffer[100];
 
 			// Read xmin
-			GetDlgItemText(hDlg, IDC_XMIN, buffer, 100);
+			GetDlgItemText(hDlg, IDC_XMIN, (char *)buffer, 100);
 			xmin = wcstod(buffer, NULL);
 
 			// Read ymin
-			GetDlgItemText(hDlg, IDC_YMIN, buffer, 100);
+			GetDlgItemText(hDlg, IDC_YMIN, (char *)buffer, 100);
 			ymin = wcstod(buffer, NULL);
 
 			// Read xmax
-			GetDlgItemText(hDlg, IDC_XMAX, buffer, 100);
+			GetDlgItemText(hDlg, IDC_XMAX, (char *)buffer, 100);
 			xmax = wcstod(buffer, NULL);
 
 			// Read ymax
-			GetDlgItemText(hDlg, IDC_YMAX, buffer, 100);
+			GetDlgItemText(hDlg, IDC_YMAX, (char *)buffer, 100);
 			ymax = wcstod(buffer, NULL);
 
 			// Read max_iter
-			GetDlgItemText(hDlg, IDC_ITER, buffer, 100);
+			GetDlgItemText(hDlg, IDC_ITER, (char *)buffer, 100);
 			max_iter = _wtoi(buffer);
 
 			// Read px
-			GetDlgItemText(hDlg, IDC_PX, buffer, 100);
+			GetDlgItemText(hDlg, IDC_PX, (char *)buffer, 100);
 			px = wcstod(buffer, NULL);
 
 			// Read py
-			GetDlgItemText(hDlg, IDC_PY, buffer, 100);
+			GetDlgItemText(hDlg, IDC_PY, (char *)buffer, 100);
 
 			// Read Julia checkbox
 			isJulia = IsDlgButtonChecked(hDlg, IDC_JULIA) == BST_CHECKED;
@@ -111,24 +109,24 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	return FALSE;
 }
 
-BOOL CALLBACK AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
 	case WM_INITDIALOG:
 	{
 		// Get version information
-		wchar_t versionString[50] = L"";
+		char versionString[50];
 		DWORD verHandle = 0;
 		UINT size = 0;
 		LPBYTE lpBuffer = NULL;
-		DWORD verSize = GetFileVersionInfoSize(L"GTFractals.exe", &verHandle);
+		DWORD verSize = GetFileVersionInfoSize("GTFractals.exe", &verHandle);
 
 		if (verSize > 0) {
 			LPVOID verData = malloc(verSize);
-			if (GetFileVersionInfo(L"GTFractals.exe", verHandle, verSize, verData)) {
-				if (VerQueryValue(verData, L"\\", (LPVOID*)&lpBuffer, &size) && size) {
+			if (GetFileVersionInfo("GTFractals.exe", verHandle, verSize, verData)) {
+				if (VerQueryValue(verData, "\\", (LPVOID*)&lpBuffer, &size) && size) {
 					VS_FIXEDFILEINFO* verInfo = (VS_FIXEDFILEINFO*)lpBuffer;
 					if (verInfo->dwSignature == 0xfeef04bd) {
-						swprintf(versionString, 50, L"GTFractals v%d.%d.%d.%d",
+						sprintf(versionString, "GTFractals v%d.%d.%d.%d",
 							(verInfo->dwFileVersionMS >> 16) & 0xffff,
 							(verInfo->dwFileVersionMS >> 0) & 0xffff,
 							(verInfo->dwFileVersionLS >> 16) & 0xffff,
@@ -140,7 +138,7 @@ BOOL CALLBACK AboutDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPa
 		}
 
 		// Update the title in the About dialog
-		SetDlgItemText(hDlg, IDC_STATIC_TITLE, versionString);
+		SetDlgItemText(hDlg, IDC_STATIC_TITLE, (char *)versionString);
 	}
 	return TRUE;
 

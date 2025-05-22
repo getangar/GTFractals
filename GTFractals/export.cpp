@@ -1,7 +1,7 @@
 #include "export.h"
 
 // Save the current fractal as a bitmap image
-BOOL SaveBitmap(HWND hwnd, LPCWSTR filePath) {
+BOOL SaveBitmap(HWND hwnd, char * filePath) {
 	// Get the client area of the window
 	RECT clientRect;
 	GetClientRect(hwnd, &clientRect);
@@ -59,7 +59,7 @@ BOOL SaveBitmap(HWND hwnd, LPCWSTR filePath) {
 
 	HANDLE hFile = CreateFile(filePath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		MessageBox(hwnd, L"Failed to create file!", L"Error", MB_ICONERROR);
+		MessageBox(hwnd, "Failed to create file!", "Error", MB_ICONERROR);
 		GlobalUnlock(hDIB);
 		GlobalFree(hDIB);
 		DeleteObject(hbmMem);
@@ -99,19 +99,19 @@ BOOL PrintFractal(HWND hwnd) {
 	pd.Flags = PD_RETURNDC;
 
 	if (!PrintDlg(&pd)) {
-		MessageBox(hwnd, L"User canceled print.", L"Error", MB_ICONERROR); // User canceled print
+		MessageBox(hwnd, "User canceled print.", "Error", MB_ICONERROR); // User canceled print
 		return FALSE;
 	}
 
 	HDC hdcPrinter = pd.hDC;
 	if (!hdcPrinter) {
-		MessageBox(hwnd, L"Failed to get printer DC.", L"Error", MB_ICONERROR);		
+		MessageBox(hwnd, "Failed to get printer DC.", "Error", MB_ICONERROR);		
 		return FALSE;
 	}
 
 	DOCINFO di = { 0 };
 	di.cbSize = sizeof(DOCINFO);
-	di.lpszDocName = L"GTFractals Print";
+	di.lpszDocName = "GTFractals Print";
 
 	if (StartDoc(hdcPrinter, &di) > 0) {
 		StartPage(hdcPrinter);

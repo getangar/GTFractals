@@ -6,7 +6,7 @@
 #include "global.h"
 
 // Function prototypes
-BOOL SaveBitmap(HWND, LPCWSTR);
+BOOL SaveBitmap(HWND, char *);
 BOOL PrintFractal(HWND);
 
 #endif

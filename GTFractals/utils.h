@@ -3,10 +3,7 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <format>
-#include <debugapi.h>
 #include <cstdarg>
-
 
 #include "global.h"
 #include "platform.h"
