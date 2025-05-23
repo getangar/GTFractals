@@ -1,4 +1,4 @@
-#include "controls.h"
+﻿#include "controls.h"
 
 HWND hStatusBar = NULL;		// Definition of the variables
 HWND hProgressBar = NULL;	// Definition of the variables
@@ -105,38 +105,27 @@ void CreateToolBar(HWND hwnd) {
 	icex.dwICC = ICC_BAR_CLASSES;
 	InitCommonControlsEx(&icex);
 
-	// Create the toolbar window
-	hToolBar = CreateWindowEx(
-		0, TOOLBARCLASSNAME, NULL,
-		WS_CHILD | WS_VISIBLE | TBSTYLE_WRAPABLE | TBSTYLE_FLAT | CCS_TOP,
-		0, 0, 0, 0,
-		hwnd, (HMENU)IDR_TOOLBAR, GetModuleHandle(NULL), NULL);
-
-	if (!hToolBar) {
-		MessageBox(hwnd, L"Failed to create Toolbar!", L"Error", MB_ICONERROR);
-		return;
-	}
-
-	// Initialize toolbar
-	SendMessage(hToolBar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-
-	// Load standard Windows toolbar bitmaps
-	TBADDBITMAP tbAddBitmap = { HINST_COMMCTRL, IDB_STD_SMALL_COLOR };
-	SendMessage(hToolBar, TB_ADDBITMAP, 0, (LPARAM)&tbAddBitmap);
-
-	// Define buttons
-	TBBUTTON tbButtons[] = {
-		{ MAKELONG(STD_FILENEW,  0), ID_FILE_NEW,   TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Reset" },
-		{ MAKELONG(STD_FILEOPEN, 0), ID_FILE_OPEN,  TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Open" },
-		{ MAKELONG(STD_FILESAVE, 0), ID_FILE_SAVE,  TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Save" },
-		{ 0, 0, TBSTATE_ENABLED, BTNS_SEP, {0}, 0, 0 }, // Separator
-		{ MAKELONG(STD_PRINT, 0),    ID_FILE_PRINT, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Print" },
-		{ MAKELONG(STD_HELP,  0),    ID_HELP_ABOUT, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"About" }
+	TBBUTTON tbb[] = {
+		{ MAKELONG(STD_FILENEW,  0), ID_FILE_NEW,   TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0 },
+		{ MAKELONG(STD_FILEOPEN, 0), ID_FILE_OPEN,  TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0 },
+		{ MAKELONG(STD_FILESAVE, 0), ID_FILE_SAVE,  TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0 },
+		{ 0, 0, TBSTATE_ENABLED, TBSTYLE_SEP, {0}, 0, 0 },
+		{ MAKELONG(STD_PRINT, 0),    ID_FILE_PRINT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0 },
+		{ MAKELONG(STD_HELP,  0),    ID_HELP_ABOUT, TBSTATE_ENABLED, TBSTYLE_BUTTON, {0}, 0, 0 }
 	};
 
-	// Add buttons to the toolbar
-	SendMessage(hToolBar, TB_ADDBUTTONS, ARRAYSIZE(tbButtons), (LPARAM)&tbButtons);
+	hToolBar = CreateToolbarEx(
+		hwnd,  // 👈 deve essere hwnd, non 0
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | CCS_TOP | TBSTYLE_TOOLTIPS,
+		1,
+		0,
+		HINST_COMMCTRL,
+		IDB_STD_SMALL_COLOR,
+		tbb,
+		6,  // 👈 numero corretto di pulsanti
+		0, 0, 0, 0,
+		sizeof(TBBUTTON)
+	);
 
-	// Show the toolbar
-	ShowWindow(hToolBar, SW_SHOW);
+	SendMessage(hToolBar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 }
